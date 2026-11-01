@@ -1,0 +1,155 @@
+<resources>
+    <string name="app_name" translatable="false">RadarTren</string>
+
+    <string name="tab_map">Map</string>
+    <string name="tab_incidents">Incidents</string>
+    <string name="tab_reports">Reports</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="action_understood">Understood</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_share">Share</string>
+
+    <string name="disclaimer_title">Before you start</string>
+    <string name="disclaimer_body">RadarTren is an independent app that shows public Renfe data. It is not an official safety system, it is not affiliated with Renfe or Adif, and it can be incomplete or late.\n\nDo not make safety decisions with it. In an emergency call 112.</string>
+
+    <string name="warning_offline">Some sources cannot be reached. The map may show old positions.</string>
+    <string name="warning_stale">Renfe has stopped updating part of the live data. The map may be out of date.</string>
+    <string name="warning_alerts_frozen">Renfe\'s official notices are not being updated. Incidents are being detected from live delays and cancellations.</string>
+
+    <string name="severity_critical">Critical</string>
+    <string name="severity_high">High</string>
+    <string name="severity_medium">Medium</string>
+    <string name="severity_low">Low</string>
+    <string name="severity_info">Information</string>
+
+    <string name="category_safety">Possible safety event</string>
+    <string name="category_interrupted">Service interrupted</string>
+    <string name="category_disruption">Disruption</string>
+    <string name="category_delay">Delay</string>
+    <string name="category_cancellation">Cancellations</string>
+    <string name="category_works">Planned works</string>
+    <string name="category_accessibility">Accessibility</string>
+    <string name="category_information">Information</string>
+
+    <string name="source_official">Renfe notice (in Spanish)</string>
+    <string name="source_detected">Detected from live data</string>
+    <string name="incident_area_delay">%1$s of %2$s trains running %3$d minutes or more late</string>
+    <string name="incident_area_cancelled">%1$s trips cancelled</string>
+
+    <string name="service_commuter">Commuter</string>
+    <string name="service_long_distance">High speed and long distance</string>
+    <string name="filter_all">All</string>
+
+    <string name="map_search">Line, train or destination</string>
+    <string name="map_trains_count">%1$d trains</string>
+    <string name="legend_on_time">On time</string>
+    <string name="legend_minor">5–14 min</string>
+    <string name="legend_moderate">15–29 min</string>
+    <string name="legend_severe">30 min or more</string>
+    <string name="legend_unknown">No delay data</string>
+
+    <string name="train_delay">Delay</string>
+    <string name="train_delay_unknown">Not available</string>
+    <string name="train_on_time">On time</string>
+    <string name="train_delay_minutes">%1$d min</string>
+    <string name="train_status">Status</string>
+    <string name="train_next_station">Station</string>
+    <string name="train_route">Route</string>
+    <string name="status_stopped">Stopped at the station</string>
+    <string name="status_arriving">Arriving</string>
+    <string name="status_moving">On the way</string>
+
+    <string name="incidents_active">Active</string>
+    <string name="incidents_urgent">Urgent</string>
+    <string name="incidents_resolved">Resolved</string>
+    <string name="incidents_unverified">Unverified</string>
+    <string name="incidents_unverified_note">These notices come from a Renfe source that has stopped updating. They may no longer apply, so they raise no alerts and stay out of the reports.</string>
+    <string name="incidents_empty">Nothing to show here.</string>
+
+    <string name="reports_empty">Reports appear when a day, week, month or year ends with data collected. Keep background collection on to fill them.</string>
+    <string name="reports_coverage">Observed: %1$d%% of the period</string>
+    <string name="reports_no_viewer">No app available to open PDF files.</string>
+    <string name="report_daily_title">Daily report</string>
+    <string name="report_weekly_title">Weekly report</string>
+    <string name="report_monthly_title">Monthly report</string>
+    <string name="report_yearly_title">Yearly report</string>
+
+    <string name="report_title">RadarTren · Rail service report</string>
+    <string name="report_generated">Generated on %1$s (Spanish time)</string>
+    <string name="report_coverage">Observed coverage: %1$s of the period (%2$d samples).</string>
+    <string name="report_low_coverage">Low coverage: this phone could not observe the whole period, so all figures below are partial.</string>
+    <string name="report_summary">Summary</string>
+    <string name="report_punctuality">Punctuality (under 5 min)</string>
+    <string name="report_average_delay">Average delay</string>
+    <string name="report_max_delay">Longest delay</string>
+    <string name="report_peak_cancelled">Peak cancellations</string>
+    <string name="report_no_data">n/a</string>
+    <string name="report_incidents_count">Incidents: %1$d</string>
+    <string name="report_unverified">Notices excluded because their source was not updating: %1$d.</string>
+    <string name="report_daily">New incidents per day</string>
+    <string name="report_by_area">Incidents by network</string>
+    <string name="report_top_incidents">Most serious incidents</string>
+    <string name="report_method">Method</string>
+    <string name="report_method_body">Figures come from samples taken by this phone about every 15 minutes, not from a continuous record. Urgency is assigned automatically by RadarTren and is not an official Renfe classification. Detected incidents describe delays and cancellations seen in the data; they do not state a cause.</string>
+    <string name="report_daily_note">Incidents count once, on the day they were first seen.</string>
+    <string name="report_disclaimer">Informational document. RadarTren is independent and not affiliated with Renfe or Adif.</string>
+    <string name="report_attribution">Data source: Renfe Operadora</string>
+    <string name="report_attribution_full">Origen de los datos: Renfe Operadora (CC BY 4.0). Map © OpenFreeMap, © OpenMapTiles, data © OpenStreetMap contributors.</string>
+
+    <string name="channel_other">Other incidents</string>
+
+    <string name="settings_general">General</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_refresh">Map refresh</string>
+    <string name="option_system">Same as the device</string>
+    <string name="option_off">Off</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="seconds_value">%1$d seconds</string>
+
+    <string name="settings_alerts">Alerts and collection</string>
+    <string name="settings_notify_from">Notify from this urgency</string>
+    <string name="settings_background">Background collection</string>
+    <string name="settings_background_hint">Checks the network about every 15 minutes for alerts and reports. Android may space checks out to save battery.</string>
+    <string name="settings_wifi_only">Only on Wi-Fi</string>
+    <string name="settings_wifi_only_hint">Avoids using mobile data in the background, but leaves gaps in alerts and reports.</string>
+
+    <string name="settings_offline">Offline use</string>
+    <string name="settings_offline_maps">Save the map for offline use</string>
+    <string name="settings_offline_maps_hint">Downloads the map of Spain up to a regional level of detail, about 30 MB. Turn it off to delete it. Live trains always need a connection.</string>
+    <string name="offline_downloading">Downloading map: %1$d%%</string>
+    <string name="offline_ready">Map saved on this device.</string>
+    <string name="offline_failed">The map could not be saved. Turn the option off and on to try again.</string>
+
+    <string name="settings_data">Your data</string>
+    <string name="settings_clear_cache">Clear cache</string>
+    <string name="settings_clear_saved">Delete saved data</string>
+    <string name="settings_export">Export incidents</string>
+    <string name="settings_export_hint">CSV file</string>
+    <string name="confirm_clear_cache">Delete temporary files and the map areas you have browsed? Your history, reports and the saved offline map stay.</string>
+    <string name="confirm_clear_saved">Delete all incident history, samples and PDF reports? This cannot be undone.</string>
+
+    <string name="settings_sources">Data source status</string>
+    <string name="feed_commuter_positions">Commuter positions</string>
+    <string name="feed_long_positions">Long distance positions</string>
+    <string name="feed_commuter_updates">Commuter delays</string>
+    <string name="feed_long_updates">Long distance delays</string>
+    <string name="feed_alerts">Official notices</string>
+    <string name="feed_live">Live</string>
+    <string name="feed_frozen">Not updating</string>
+    <string name="feed_unreachable">No connection</string>
+    <string name="feed_pending">Checking</string>
+
+    <string name="settings_about">About</string>
+    <string name="settings_feedback">Send feedback</string>
+    <string name="settings_feedback_hint">Opens your email app to write to the developer</string>
+    <string name="settings_privacy">Privacy policy</string>
+    <string name="settings_disclaimer">RadarTren is independent and not affiliated with Renfe or Adif. It is not a safety system. In an emergency call 112.</string>
+    <string name="settings_attribution">Data source: Renfe Operadora (CC BY 4.0). Map © OpenFreeMap, © OpenMapTiles, data © OpenStreetMap contributors.</string>
+    <string name="settings_version">Version %1$s</string>
+</resources>

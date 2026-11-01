@@ -1,0 +1,154 @@
+<resources>
+    <string name="tab_map">Mapa</string>
+    <string name="tab_incidents">Incidencias</string>
+    <string name="tab_reports">Informes</string>
+    <string name="tab_settings">Ajustes</string>
+
+    <string name="action_understood">Entendido</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Borrar</string>
+    <string name="action_share">Compartir</string>
+
+    <string name="disclaimer_title">Antes de empezar</string>
+    <string name="disclaimer_body">RadarTren es una app independiente que muestra datos públicos de Renfe. No es un sistema oficial de seguridad, no tiene relación con Renfe ni con Adif, y sus datos pueden estar incompletos o llegar tarde.\n\nNo tomes decisiones de seguridad con ella. En una emergencia llama al 112.</string>
+
+    <string name="warning_offline">No se puede acceder a algunas fuentes. El mapa puede mostrar posiciones antiguas.</string>
+    <string name="warning_stale">Renfe ha dejado de actualizar parte de los datos en vivo. El mapa puede estar desactualizado.</string>
+    <string name="warning_alerts_frozen">Los avisos oficiales de Renfe no se están actualizando. Las incidencias se detectan a partir de los retrasos y cancelaciones en vivo.</string>
+
+    <string name="severity_critical">Crítica</string>
+    <string name="severity_high">Alta</string>
+    <string name="severity_medium">Media</string>
+    <string name="severity_low">Baja</string>
+    <string name="severity_info">Información</string>
+
+    <string name="category_safety">Posible suceso de seguridad</string>
+    <string name="category_interrupted">Servicio interrumpido</string>
+    <string name="category_disruption">Alteración del servicio</string>
+    <string name="category_delay">Retraso</string>
+    <string name="category_cancellation">Cancelaciones</string>
+    <string name="category_works">Obras programadas</string>
+    <string name="category_accessibility">Accesibilidad</string>
+    <string name="category_information">Información</string>
+
+    <string name="source_official">Aviso de Renfe</string>
+    <string name="source_detected">Detectada con datos en vivo</string>
+
+    <string name="incident_area_delay">%1$s de %2$s trenes con %3$d minutos o más de retraso</string>
+    <string name="incident_area_cancelled">%1$s viajes cancelados</string>
+
+    <string name="service_commuter">Cercanías</string>
+    <string name="service_long_distance">Alta velocidad y larga distancia</string>
+    <string name="filter_all">Todos</string>
+
+    <string name="map_search">Línea, tren o destino</string>
+    <string name="map_trains_count">%1$d trenes</string>
+    <string name="legend_on_time">Puntual</string>
+    <string name="legend_minor">5–14 min</string>
+    <string name="legend_moderate">15–29 min</string>
+    <string name="legend_severe">30 min o más</string>
+    <string name="legend_unknown">Sin dato de retraso</string>
+
+    <string name="train_delay">Retraso</string>
+    <string name="train_delay_unknown">No disponible</string>
+    <string name="train_on_time">Puntual</string>
+    <string name="train_delay_minutes">%1$d min</string>
+    <string name="train_status">Estado</string>
+    <string name="train_next_station">Estación</string>
+    <string name="train_route">Recorrido</string>
+    <string name="status_stopped">Parado en la estación</string>
+    <string name="status_arriving">Llegando</string>
+    <string name="status_moving">En camino</string>
+
+    <string name="incidents_active">Activas</string>
+    <string name="incidents_urgent">Urgentes</string>
+    <string name="incidents_resolved">Resueltas</string>
+    <string name="incidents_unverified">Sin verificar</string>
+    <string name="incidents_unverified_note">Estos avisos proceden de una fuente de Renfe que ha dejado de actualizarse. Puede que ya no estén vigentes, así que no generan alertas ni cuentan en los informes.</string>
+    <string name="incidents_empty">No hay nada que mostrar aquí.</string>
+
+    <string name="reports_empty">Los informes aparecen cuando termina un día, semana, mes o año con datos recogidos. Mantén activa la recogida en segundo plano para completarlos.</string>
+    <string name="reports_coverage">Observado: %1$d%% del periodo</string>
+    <string name="reports_no_viewer">No hay ninguna app para abrir archivos PDF.</string>
+    <string name="report_daily_title">Informe diario</string>
+    <string name="report_weekly_title">Informe semanal</string>
+    <string name="report_monthly_title">Informe mensual</string>
+    <string name="report_yearly_title">Informe anual</string>
+
+    <string name="report_title">RadarTren · Informe del servicio ferroviario</string>
+    <string name="report_generated">Generado el %1$s (hora peninsular)</string>
+    <string name="report_coverage">Cobertura observada: %1$s del periodo (%2$d muestras).</string>
+    <string name="report_low_coverage">Cobertura baja: este móvil no pudo observar todo el periodo, así que todas las cifras siguientes son parciales.</string>
+    <string name="report_summary">Resumen</string>
+    <string name="report_punctuality">Puntualidad (menos de 5 min)</string>
+    <string name="report_average_delay">Retraso medio</string>
+    <string name="report_max_delay">Mayor retraso</string>
+    <string name="report_peak_cancelled">Máximo de cancelaciones</string>
+    <string name="report_no_data">s/d</string>
+    <string name="report_incidents_count">Incidencias: %1$d</string>
+    <string name="report_unverified">Avisos excluidos porque su fuente no se estaba actualizando: %1$d.</string>
+    <string name="report_daily">Incidencias nuevas por día</string>
+    <string name="report_by_area">Incidencias por red</string>
+    <string name="report_top_incidents">Incidencias más graves</string>
+    <string name="report_method">Metodología</string>
+    <string name="report_method_body">Las cifras proceden de muestras tomadas por este móvil cada 15 minutos aproximadamente, no de un registro continuo. RadarTren asigna la urgencia de forma automática y no es una clasificación oficial de Renfe. Las incidencias detectadas describen retrasos y cancelaciones vistos en los datos; no indican una causa.</string>
+    <string name="report_daily_note">Cada incidencia cuenta una vez, el día en que se vio por primera vez.</string>
+    <string name="report_disclaimer">Documento informativo. RadarTren es independiente y no tiene relación con Renfe ni con Adif.</string>
+    <string name="report_attribution">Origen de los datos: Renfe Operadora</string>
+    <string name="report_attribution_full">Origen de los datos: Renfe Operadora (CC BY 4.0). Mapa © OpenFreeMap, © OpenMapTiles, datos © colaboradores de OpenStreetMap.</string>
+
+    <string name="channel_other">Otras incidencias</string>
+
+    <string name="settings_general">General</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_refresh">Actualización del mapa</string>
+    <string name="option_system">Igual que el dispositivo</string>
+    <string name="option_off">Desactivado</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="seconds_value">%1$d segundos</string>
+
+    <string name="settings_alerts">Alertas y recogida</string>
+    <string name="settings_notify_from">Avisar a partir de esta urgencia</string>
+    <string name="settings_background">Recogida en segundo plano</string>
+    <string name="settings_background_hint">Revisa la red cada 15 minutos aproximadamente para las alertas y los informes. Android puede espaciar las comprobaciones para ahorrar batería.</string>
+    <string name="settings_wifi_only">Solo con wifi</string>
+    <string name="settings_wifi_only_hint">Evita usar datos móviles en segundo plano, pero deja huecos en las alertas y los informes.</string>
+
+    <string name="settings_offline">Uso sin conexión</string>
+    <string name="settings_offline_maps">Guardar el mapa para usarlo sin conexión</string>
+    <string name="settings_offline_maps_hint">Descarga el mapa de España con detalle regional, unos 30 MB. Desactívalo para borrarlo. Los trenes en vivo siempre necesitan conexión.</string>
+    <string name="offline_downloading">Descargando mapa: %1$d%%</string>
+    <string name="offline_ready">Mapa guardado en este dispositivo.</string>
+    <string name="offline_failed">No se pudo guardar el mapa. Desactiva y activa la opción para reintentarlo.</string>
+
+    <string name="settings_data">Tus datos</string>
+    <string name="settings_clear_cache">Borrar la caché</string>
+    <string name="settings_clear_saved">Borrar los datos guardados</string>
+    <string name="settings_export">Exportar incidencias</string>
+    <string name="settings_export_hint">Archivo CSV</string>
+    <string name="confirm_clear_cache">¿Borrar los archivos temporales y las zonas del mapa que has visitado? Tu historial, los informes y el mapa guardado se conservan.</string>
+    <string name="confirm_clear_saved">¿Borrar todo el historial de incidencias, las muestras y los informes PDF? No se puede deshacer.</string>
+
+    <string name="settings_sources">Estado de las fuentes de datos</string>
+    <string name="feed_commuter_positions">Posiciones de Cercanías</string>
+    <string name="feed_long_positions">Posiciones de larga distancia</string>
+    <string name="feed_commuter_updates">Retrasos de Cercanías</string>
+    <string name="feed_long_updates">Retrasos de larga distancia</string>
+    <string name="feed_alerts">Avisos oficiales</string>
+    <string name="feed_live">En vivo</string>
+    <string name="feed_frozen">Sin actualizar</string>
+    <string name="feed_unreachable">Sin conexión</string>
+    <string name="feed_pending">Comprobando</string>
+
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_feedback">Enviar comentarios</string>
+    <string name="settings_feedback_hint">Abre tu app de correo para escribir al desarrollador</string>
+    <string name="settings_privacy">Política de privacidad</string>
+    <string name="settings_disclaimer">RadarTren es independiente y no tiene relación con Renfe ni con Adif. No es un sistema de seguridad. En una emergencia llama al 112.</string>
+    <string name="settings_attribution">Origen de los datos: Renfe Operadora (CC BY 4.0). Mapa © OpenFreeMap, © OpenMapTiles, datos © colaboradores de OpenStreetMap.</string>
+    <string name="settings_version">Versión %1$s</string>
+</resources>
