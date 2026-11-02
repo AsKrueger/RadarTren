@@ -1,0 +1,266 @@
+routeId;line;color;name
+10T0001C1;C1;75B6E0;Principe Pio -Aeropuerto-T4
+10T0002C1;C1;75B6E0;Aeropuerto-T4 -Principe Pio
+10T0003C10;C10;BCCF00;Villalba -Aeropuerto-T4
+10T0004C10;C10;BCCF00;Aeropuerto-T4 -Villalba
+10T0005C2;C2;00943D;Guadalajara -Chamartín - Clara Campoamor
+10T0006C2;C2;00943D;Chamartín - Clara Campoamor -Guadalajara
+10T0007C3;C3;952585;Chamartín - Clara Campoamor -Aranjuez
+10T0008C3;C3;952585;Aranjuez -Chamartín - Clara Campoamor
+10T0011C4;C4;2C2A86;Chamartín - Clara Campoamor -Parla
+10T0012C4;C4;2C2A86;Parla -Chamartín - Clara Campoamor
+10T0013C4a;C4a;2C2A86;Alcobendas-S.Sebast. de los Reyes -Parla
+10T0014C4a;C4a;2C2A86;Parla -Alcobendas-S.Sebast. de los Reyes
+10T0015C4b;C4b;2C2A86;Colmenar Viejo -Parla
+10T0016C4b;C4b;2C2A86;Parla -Colmenar Viejo
+10T0017C5;C5;FECB00;Mostoles el Soto -Humanes
+10T0018C5;C5;FECB00;Humanes -Mostoles el Soto
+10T0025C9;C9;915419;Cercedilla -Cotos
+10T0026C9;C9;915419;Cotos -Cercedilla
+10T0027C8a;C8a;868584;Atocha -El Escorial
+10T0035C5;C5;FECB00;-Fuenlabrada
+10T0051C7;C7;E5202A;Principe Pio -Chamartín - Clara Campoamor
+10T0052C7;C7;E5202A;Chamartín - Clara Campoamor -Principe Pio
+10T0053C7;C7;E5202A;Principe Pio -Atocha
+10T0054C7;C7;E5202A;Atocha -Principe Pio
+10T0059C7;C7;E5202A;Chamartín - Clara Campoamor -Alcala de Henares
+10T0061C8a;C8a;868584;El Escorial -Chamartín - Clara Campoamor
+10T0062C8a;C8a;868584;Chamartín - Clara Campoamor -El Escorial
+10T0064C10;C10;BCCF00;Principe Pio -El Escorial
+10T0071C10;C10;BCCF00;Pozuelo -Pitis
+10T0075C10;C10;BCCF00;Torrelodones -Chamartín - Clara Campoamor
+10T0076C10;C10;BCCF00;Chamartín - Clara Campoamor -Torrelodones
+10T0085C8a;C8a;868584;-El Escorial
+10T0087C8b;C8b;868584;Chamartín - Clara Campoamor -Cercedilla
+10T0088C8b;C8b;868584;Cercedilla -Chamartín - Clara Campoamor
+10T0097C8b;C8b;868584;-Cercedilla
+10T0098C8b;C8b;868584;Cercedilla -
+20T0001C1;C1;EC3541;Gijon (Sanz Crespo) -Puente L.Fierros
+20T0002C1;C1;EC3541;Puente L.Fierros -Gijon (Sanz Crespo)
+20T0003C2;C2;009746;Oviedo -El Entrego
+20T0004C2;C2;009746;El Entrego -Oviedo
+20T0005C3;C3;0060C4;Llamaquique -San Juan de Nieva
+20T0006C3;C3;0060C4;San Juan de Nieva -Llamaquique
+20T0009C4;C4;E93CAC;Gijon (Sanz Crespo) -Cudillero
+20T0010C4;C4;E93CAC;Cudillero -Gijon (Sanz Crespo)
+20T0011C5;C5;C4D600;Gijon (Sanz Crespo) -La Pola De Llaviana/Pola De Laviana
+20T0012C5;C5;C4D600;La Pola De Llaviana/Pola De Laviana -Gijon (Sanz Crespo)
+20T0015C6;C6;579BE2;Oviedo -L'infiestu Apd
+20T0016C6;C6;579BE2;L'infiestu Apd -Oviedo
+20T0017C7;C7;ED7D31;Gijon (Sanz Crespo) -San Esteban
+20T0018C7;C7;ED7D31;San Esteban -Gijon (Sanz Crespo)
+20T0019C8;C8;FDC02C;Baíña -Col.lanzo
+20T0020C8;C8;FDC02C;Col.lanzo -Baíña
+20T0021C7;C7;ED7D31;Oviedo -Trubia
+20T0022C7;C7;ED7D31;Trubia -Oviedo
+20T0023C4;C4;E93CAC;Candás -Aviles
+20T0025C6;C6;579BE2;Nava -El Berrón
+20T0026C6;C6;579BE2;El Berrón -Nava
+20T0027C8;C8;FDC02C;Figareo -Morea/Moreda
+20T0028C8;C8;FDC02C;Morea/Moreda -Figareo
+20T0105C5a;C5a;C4D600;Gijon (Sanz Crespo) -Oviedo
+20T0106C5a;C5a;C4D600;Oviedo -Gijon (Sanz Crespo)
+20T0109C6;C6;579BE2;El Berrón -L'infiestu Apd
+20T0110C6;C6;579BE2;L'infiestu Apd -El Berrón
+20T0113C6;C6;579BE2;El Berrón -Nava
+20T0115C6;C6;579BE2;El Berrón -L'infiestu Apd
+20T0119C6;C6;579BE2;Carancos -L'infiestu Apd
+20T0120C6;C6;579BE2;L'infiestu Apd -El Berrón
+20T0122C6;C6;579BE2;L'infiestu Apd -Carancos
+30T0001C1;C1;78B4E1;Lora del Rio -Lebrija
+30T0002C1;C1;78B4E1;Lebrija -Lora del Rio
+30T0003C2;C2;067B34;Santa Justa -Cartuja
+30T0004C2;C2;067B34;Cartuja -Santa Justa
+30T0005C3;C3;E4242D;Santa Justa -Cazalla-Constantina
+30T0006C3;C3;E4242D;Cazalla-Constantina -Santa Justa
+30T0007C4;C4;8E2182;Santa Justa -Santa Justa
+30T0009C5;C5;073588;Jardines de Hercules -Benacazon
+30T0010C5;C5;073588;Benacazon -Jardines de Hercules
+30T0029C5;C5;073588;Santa Justa -Benacazon
+30T0030C5;C5;073588;Benacazon -Santa Justa
+30T0036C3;C3;E4242D;-Santa Justa
+30T0037C3;C3;E4242D;Cazalla-Constantina -Los Rosales
+30T0038C3;C3;E4242D;Los Rosales -Cazalla-Constantina
+30T0044C3;C3;E4242D;Santa Justa -
+31T0001C1;C1;D7001E;Cádiz -Aeropuerto de Jerez
+31T0002C1;C1;D7001E;Aeropuerto de Jerez -Cádiz
+31T0003C1a;C1a;D7001E;Las Aletas -Universidad
+31T0004C1a;C1a;D7001E;Universidad -Las Aletas
+31T0005T1;T1;C4D600;Cádiz -Pelagatos
+31T0006T1;T1;C4D600;Pelagatos -Cádiz
+31T0007C1;C1;D7001E;Jerez de la Frontera -Las Aletas
+31T0008C1;C1;D7001E;Las Aletas -Jerez de la Frontera
+32T0001C1;C1;4a8ccc;Málaga-Centro Alameda -Fuengirola
+32T0002C1;C1;4a8ccc;Fuengirola -Málaga-Centro Alameda
+32T0003C2;C2;0fcf34;Málaga-Centro Alameda -Álora
+32T0004C2;C2;0fcf34;Álora -Málaga-Centro Alameda
+32T0019C2;C2;0fcf34;Álora -
+32T0020C2;C2;0fcf34;-Álora
+40T0001C1;C1;7AB3DE;Valencia Nord -Platja i Grau de Gandia
+40T0002C1;C1;7AB3DE;Platja i Grau de Gandia -Valencia Nord
+40T0005C2;C2;F79529;Valencia Nord -Moixent
+40T0006C2;C2;F79529;Moixent -Valencia Nord
+40T0007C3;C3;7A2780;Valencia Nord -Utiel
+40T0008C3;C3;7A2780;Utiel -Valencia Nord
+40T0011C5;C5;018A27;Valencia Nord -Caudiel
+40T0012C5;C5;018A27;Caudiel -Valencia Nord
+40T0013C6;C6;0D3386;Valencia Nord -Castello de la Plana
+40T0014C6;C6;0D3386;Castello de la Plana -Valencia Nord
+40T0015C6;C6;0D3386;Valencia Nord -Castello de la Plana
+40T0016C6;C6;0D3386;Castello de la Plana -Valencia Nord
+40T0017C3;C3;7A2780;Valencia Nord -Utiel
+40T0019C5;C5;018A27;Valencia Nord -Caudiel
+40T0020C5;C5;018A27;Caudiel -Valencia Nord
+40T0021C6;C6;0D3386;Valencia Nord -Castello de la Plana
+40T0022C6;C6;0D3386;Castello de la Plana -Valencia Nord
+40T0025C3;C3;7A2780;Buñol -Valencia - Sant Isidre
+40T0026C3;C3;7A2780;Valencia - Sant Isidre -Buñol
+40T0029C2;C2;F79529;Benifaio - Almussafes -Xativa
+40T0030C2;C2;F79529;Xativa -Benifaio - Almussafes
+40T0043C3;C3;7A2780;Valencia Nord -Buñol
+40T0044C3;C3;7A2780;Buñol -Valencia Nord
+40T0045C3;C3;7A2780;Valencia - F.S.L. -Buñol
+40T0046C3;C3;7A2780;Buñol -Valencia - F.S.L.
+40T0049C2;C2;F79529;Moixent -L'Alcudia de Crespins
+40T0050C2;C2;F79529;Moixent -Xativa
+40T0051C2;C2;F79529;L'Alcudia de Crespins -Moixent
+40T0052C2;C2;F79529;Xativa -Moixent
+40T0053C5;C5;018A27;PuÇol -Caudiel
+40T0054C3;C3;7A2780;Utiel -Buñol
+40T0055C3;C3;7A2780;Buñol -Utiel
+40T0056C5;C5;018A27;Caudiel -PuÇol
+40T0057ER24;ER24;FFFFFF;-Xativa
+41T0001C1;C1;73B6E0;Murcia del Carmen -Alacant Terminal
+41T0002C1;C1;73B6E0;Alacant Terminal -Murcia del Carmen
+41T0005C3;C3;7D2486;Sant Vicent Centre -Alacant Terminal
+41T0006C3;C3;7D2486;Alacant Terminal -Sant Vicent Centre
+41T0011C3;C3;706D75;-Sant Vicent Centre
+41T0013C1;C1;73B6E0;Alacant Terminal -Alacant Terminal
+41T0023C2;C2;E93CAC;Lorca-Sutullena -Murcia del Carmen
+41T0025C2;C2;E93CAC;Aguilas -Lorca-Sutullena
+41T0028C1;C1;73B6E0;Alacant Terminal -Callosa de Segura
+41T0029C1;C1;73B6E0;Alacant Terminal -Crevillent
+41T0030C2;C2;E93CAC;Murcia del Carmen -Lorca-Sutullena
+41T0034C1;C1;73B6E0;Callosa de Segura -Alacant Terminal
+41T0035C1;C1;73B6E0;Crevillent -Alacant Terminal
+45T0001C1;C1;D7001E;Cartagena -Los Nietos
+45T0002C1;C1;D7001E;Los Nietos -Cartagena
+46T0001C1;C1;D7001E;Ferrol -Ortigueira
+46T0002C1;C1;D7001E;Ortigueira -Ferrol
+47T0001C1;C1;D7001E;Asunción-Universidad -Cistierna
+47T0002C1;C1;D7001E;Cistierna -Asunción-Universidad
+47T0009BUS;BUS;D7001E;León -Asunción-Universidad
+47T0010BUS;BUS;D7001E;Asunción-Universidad -León
+51T0001R1;R1;7DBCEC;Molins de Rei -Maçanet-Massanes
+51T0002R1;R1;7DBCEC;Maçanet-Massanes -Molins de Rei
+51T0003R2N;R2N;D0DF00;Aeroport -Maçanet-Massanes
+51T0004R2N;R2N;D0DF00;Maçanet-Massanes -Aeroport
+51T0007R2S;R2S;146520;Sant Vicenc de Calders -Barcelona-Estació de França
+51T0008R2S;R2S;146520;Barcelona-Estació de França -Sant Vicenc de Calders
+51T0011R2S;R2S;146520;Sant Vicenc de Calders -Barcelona-Estació de França
+51T0012R2S;R2S;146520;Barcelona-Estació de França -Sant Vicenc de Calders
+51T0013R2;R2;26A741;Sant Vicenc de Calders -Maçanet-Massanes
+51T0014R2;R2;26A741;Maçanet-Massanes -Sant Vicenc de Calders
+51T0015R3;R3;E54A3C;L'Hospitalet de Llobregat -Puigcerdà
+51T0016R3;R3;E54A3C;Puigcerdà -L'Hospitalet de Llobregat
+51T0019R4;R4;F7A30D;Sant Vicenc de Calders -Manresa
+51T0020R4;R4;F7A30D;Manresa -Sant Vicenc de Calders
+51T0023R8;R8;88016A;Martorell Central -Granollers Centre
+51T0024R8;R8;88016A;Granollers Centre -Martorell Central
+51T0025R2;R2;26A741;Sant Vicenc de Calders -Castelldefels
+51T0026R2;R2;26A741;Castelldefels -Sant Vicenc de Calders
+51T0028R2;R2;26A741;Barcelona-Sants -Sant Celoni
+51T0029R7;R7;24A842;Barcelona-Fabra i Puig -Cerdanyola-Universitat
+51T0030R7;R7;24A842;Cerdanyola-Universitat -Barcelona-Fabra i Puig
+51T0031R4;R4;F7A30D;Terrassa Estació del Nord -Castellbisbal
+51T0032R4;R4;F7A30D;Castellbisbal -Terrassa Estació del Nord
+51T0033R3;R3;E54A3C;Figaró -La Tor de Querol-Enveig
+51T0034R3;R3;E54A3C;La Tor de Querol-Enveig -Figaró
+51T0039R3;R3;E54A3C;Vic -Montcada Ripollet
+51T0040R3;R3;E54A3C;Montcada Ripollet -Vic
+51T0045R3;R3;E54A3C;La Molina -Ribes de Freser
+51T0046R3;R3;E54A3C;Ribes de Freser -La Molina
+51T0047RL4;RL4;F7A30D;Terrassa Estació del Nord -Lleida
+51T0048RL4;RL4;F7A30D;Lleida -Terrassa Estació del Nord
+51T0093R11;R11;0069AA;Figueres -Barcelona-Sants
+51T0094R11;R11;0069AA;Barcelona-Sants -Figueres
+51T0097R15;R15;978571;Riba-roja d'Ebre -Caspe
+51T0098R15;R15;978571;Caspe -Riba-roja d'Ebre
+51T0099RL3;RL3;B6AE33;Lleida -Cervera
+51T0100RL3;RL3;B6AE33;Cervera -Lleida
+51T0101R14;R14;6C60A8;La Plana-Picamoixons -Tarragona
+51T0102R14;R14;6C60A8;Tarragona -La Plana-Picamoixons
+51T0103R16;R16;B52B46;Tortosa -Barcelona-Estació de França
+51T0104R16;R16;B52B46;Barcelona-Estació de França -Tortosa
+51T0105R16;R16;B52B46;Ulldecona-Alcanar-La Sénia -
+51T0106R16;R16;B52B46;-Ulldecona-Alcanar-La Sénia
+51T0107R17;R17;F3B12E;Salou-Port Aventura -Barcelona-Estació de França
+51T0108R17;R17;F3B12E;Barcelona-Estació de França -Salou-Port Aventura
+51T0109RT2;RT2;F965DE;Salou-Port Aventura -Tarragona
+51T0110RT2;RT2;F965DE;Tarragona -Salou-Port Aventura
+51T0111RG1;RG1;409EF5;Maçanet-Massanes -Figueres
+51T0112RG1;RG1;409EF5;Figueres -Maçanet-Massanes
+51T0113R15;R15;978571;Cunit -Riba-roja d'Ebre
+51T0114R15;R15;978571;Riba-roja d'Ebre -Cunit
+51T0120R11;R11;0069AA;Girona -Barcelona-Sant Andreu
+51T0123R15;R15;978571;Reus -Torredembarra
+51T0124R15;R15;978571;Torredembarra -Reus
+51T0127R3;R3;E54A3C;Ripoll -La Garriga
+51T0128R3;R3;E54A3C;La Garriga -Ripoll
+51T0137RT1;RT1;39D4CC;La Plana-Picamoixons -Tarragona
+51T0138RT1;RT1;39D4CC;Tarragona -La Plana-Picamoixons
+51T0139R13;R13;146520;Lleida -Vinaixa
+51T0140R13;R13;146520;Vinaixa -Lleida
+51T0163R15;R15;978571;-Mora la Nova
+51T0164R15;R15;978571;Mora la Nova -
+51T0175R13;R13;146520;La Plana-Picamoixons -Sant Vicenc de Calders
+51T0176R13;R13;146520;Sant Vicenc de Calders -La Plana-Picamoixons
+51T0185R13;R13;146520;La Plana-Picamoixons -Lleida
+51T0186R3;R3;E54A3C;Granollers-Canovelles -Barcelona-Fabra i Puig
+51T0187R3;R3;E54A3C;La Garriga -Ripoll
+51T0188R3;R3;E54A3C;La Garriga -Barcelona-Fabra i Puig
+51T0189R3;R3;E54A3C;Centelles -Vic
+51T0190R3;R3;E54A3C;Centelles -Barcelona-Fabra i Puig
+51T0191R3;R3;E54A3C;Vic -Centelles
+51T0192R3;R3;E54A3C;Vic -Puigcerdà
+51T0193R3;R3;E54A3C;Vic -La Tor de Querol-Enveig
+51T0194R3;R3;E54A3C;Vic -Barcelona-Fabra i Puig
+51T0195R3;R3;E54A3C;Ripoll -La Garriga
+51T0196R3;R3;E54A3C;Planoles -La Molina
+51T0197R3;R3;E54A3C;La Molina -Planoles
+51T0198R3;R3;E54A3C;Puigcerdà -Vic
+51T0199R3;R3;E54A3C;La Tor de Querol-Enveig -Vic
+51T0200R13;R13;146520;Lleida -La Plana-Picamoixons
+51T0201R3;R3;E54A3C;Barcelona-Fabra i Puig -Granollers-Canovelles
+51T0202R3;R3;E54A3C;Barcelona-Fabra i Puig -La Garriga
+51T0203R3;R3;E54A3C;Barcelona-Fabra i Puig -Centelles
+51T0204R3;R3;E54A3C;Barcelona-Fabra i Puig -Vic
+60T0001C1;C1;D7001E;Abando -Santurtzi
+60T0002C1;C1;D7001E;Santurtzi -Abando
+60T0003C2;C2;0F8C2D;Abando -Muskiz
+60T0004C2;C2;0F8C2D;Muskiz -Abando
+60T0005C3;C3;78B4E1;Abando -Orduña
+60T0006C3;C3;78B4E1;Orduña -Abando
+60T0007C4;C4;E93CAC;Bilbao La Concordia -La Calzada
+60T0008C4;C4;E93CAC;La Calzada -Bilbao La Concordia
+60T0017C5;C5;2C2A86;Aranguren -Karranza
+60T0018C5;C5;2C2A86;Karranza -Aranguren
+60T0019C5;C5;2C2A86;-Bilbao La Concordia
+60T0020C5;C5;2C2A86;Bilbao La Concordia -
+61T0001C1;C1;DA001C;Irun -Brincola
+61T0002C1;C1;DA001C;Brincola -Irun
+61T0005C1;C1;DA001C;-Donostia-San Sebastian
+61T0006C1;C1;DA001C;Donostia-San Sebastian -
+61T0007C1;C1;DA001C;Zumarraga -Hernani
+61T0008C1;C1;DA001C;Hernani -Zumarraga
+61T0030C1;C1;DA001C;Irun -Lezo-Renteria
+62T0001C1;C1;EF3340;Santander -Reinosa
+62T0002C1;C1;EF3340;Reinosa -Santander
+62T0003C2;C2;009645;Santander -Cabezón De La Sal
+62T0004C2;C2;009645;Cabezón De La Sal -Santander
+62T0005C3;C3;0060A9;Santander -Liérganes
+62T0006C3;C3;0060A9;Liérganes -Santander
+70T0001C1;C1;D90724;Casetas -Miraflores
+70T0002C1;C1;D90724;Miraflores -Casetas
+70T0005C1;C1;D90724;Zaragoza Delicias -
+70T0006C1;C1;D90724;-Zaragoza Delicias
