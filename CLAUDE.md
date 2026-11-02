@@ -3,7 +3,7 @@
 App Android (Kotlin, Compose, Room, WorkManager, MapLibre) con datos abiertos de Renfe. Lee `README.md` y `docs/`.
 
 - Todo cambio se documenta en `docs/` y `CHANGELOG.md`.
-- Textos de interfaz siempre en `values/strings.xml` (inglés) y `values-es/strings.xml` (español).
+- Textos de interfaz siempre en `values/strings.xml` (inglés) y `values-es/strings.xml` (español), siguiendo `docs/lenguaje-claro.md`: la app la usa cualquier persona, también sin estudios.
 - Nunca presentar un dato antiguo como actual: revisa `FeedHealth` antes de tocar alertas o informes.
 - Las incidencias detectadas describen datos y nunca afirman una causa.
 - Solo fuentes oficiales documentadas. No saltarse bloqueos de acceso.

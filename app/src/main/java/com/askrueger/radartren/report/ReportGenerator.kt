@@ -12,6 +12,7 @@ import com.askrueger.radartren.domain.ReportBuilder
 import com.askrueger.radartren.domain.ReportPeriod
 import com.askrueger.radartren.domain.SPAIN_ZONE
 import com.askrueger.radartren.R
+import com.askrueger.radartren.ui.common.durationText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -47,7 +48,14 @@ fun incidentText(context: Context, source: IncidentSource, category: IncidentCat
         context.getString(R.string.incident_area_delay, delayed, total, IncidentDetector.AREA_DELAY_MINUTES)
     }
     category == IncidentCategory.CANCELLATION -> context.getString(R.string.incident_area_cancelled, text)
+    category == IncidentCategory.DELAY -> TRAIN_DELAY.matchEntire(text)?.let { match ->
+        val (train, minutes) = match.destructured
+        context.getString(R.string.incident_train_delay, train, durationText(context, minutes.toInt()))
+    } ?: text
     else -> text
 }
+
+/** The stored form of a train delay, as written by [IncidentDetector]: "C2 84906: +121 min". */
+private val TRAIN_DELAY = Regex("""(.+): \+(\d+) min""")
 
 fun IncidentEntity.displayText(context: Context): String = incidentText(context, source, category, text)

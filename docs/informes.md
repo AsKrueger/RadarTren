@@ -11,6 +11,8 @@ Cuando termina un periodo con datos recogidos, `CollectWorker` genera su PDF una
 
 Solo se comprueba el último periodo cerrado de cada tipo. Si el móvil pasa días sin ejecutar la recogida, los informes intermedios no se generan.
 
+El informe empieza con una frase en lenguaje sencillo, por ejemplo "En pocas palabras: 8 de cada 10 trenes iban a su hora y hubo 23 problemas". Si no hay datos de puntualidad, lo dice.
+
 ## Cifras
 
 | Cifra | Cálculo |

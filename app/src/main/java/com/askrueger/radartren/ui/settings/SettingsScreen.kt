@@ -53,6 +53,7 @@ import com.askrueger.radartren.domain.Severity
 import com.askrueger.radartren.ui.AppViewModel
 import com.askrueger.radartren.ui.common.feedLabel
 import com.askrueger.radartren.ui.common.label
+import com.askrueger.radartren.ui.help.HelpSheet
 import com.askrueger.radartren.ui.reports.share
 import kotlinx.coroutines.launch
 import androidx.core.net.toUri
@@ -66,10 +67,12 @@ fun SettingsScreen(viewModel: AppViewModel, settings: Settings, live: LiveData?,
     val storage by viewModel.storage.collectAsStateWithLifecycle()
     val offlineState by viewModel.offlineMapState.collectAsStateWithLifecycle()
     var confirmation by remember { mutableStateOf<(Int)?>(null) }
+    var help by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { viewModel.loadStorage() }
 
     Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
+        Action(stringResource(R.string.settings_help), stringResource(R.string.settings_help_hint)) { help = true }
         Section(R.string.settings_general)
         Choice(
             stringResource(R.string.settings_language),
@@ -114,7 +117,16 @@ fun SettingsScreen(viewModel: AppViewModel, settings: Settings, live: LiveData?,
             stringResource(R.string.settings_notify_from),
             listOf(Severity.CRITICAL, Severity.HIGH, Severity.MEDIUM, null),
             settings.notifyFrom,
-            { if (it == null) stringResource(R.string.option_off) else label(context, it) },
+            {
+                stringResource(
+                    when (it) {
+                        Severity.CRITICAL -> R.string.notify_critical_only
+                        Severity.HIGH -> R.string.notify_serious
+                        null -> R.string.notify_none
+                        else -> R.string.notify_moderate
+                    },
+                )
+            },
             viewModel::setNotifyFrom,
         )
         Toggle(
@@ -169,6 +181,8 @@ fun SettingsScreen(viewModel: AppViewModel, settings: Settings, live: LiveData?,
         Hint(stringResource(R.string.settings_attribution), Modifier.padding(horizontal = 16.dp, vertical = 6.dp))
         Hint(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME), Modifier.padding(horizontal = 16.dp, vertical = 6.dp))
     }
+
+    if (help) HelpSheet { help = false }
 
     confirmation?.let { message ->
         AlertDialog(

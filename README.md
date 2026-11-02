@@ -19,6 +19,7 @@ App Android que muestra en un mapa en vivo los trenes de Renfe en España, detec
 | Tus datos | Borrar caché, borrar datos guardados, exportar incidencias a CSV |
 | Idiomas y tema | Español e inglés seleccionables; tema claro, oscuro o del sistema |
 | Comentarios | Envío directo al desarrollador por correo desde la app |
+| Para todo el mundo | Lenguaje claro, ayuda con botones para llamar a Renfe y al 112, letra grande y retraso escrito además de por colores |
 
 ## Puesta en marcha
 
@@ -48,6 +49,7 @@ Si Gradle falla con `jlink executable ... does not exist`, está usando el JRE d
 | [Clasificación de urgencia](docs/clasificacion-de-urgencia.md) | Reglas y umbrales de las incidencias |
 | [Informes](docs/informes.md) | Cómo se calculan y qué significa cada cifra |
 | [Pruebas](docs/pruebas.md) | Qué se prueba, cómo, y qué queda sin cubrir |
+| [Lenguaje claro](docs/lenguaje-claro.md) | Cómo se escriben los textos para que cualquiera los entienda |
 | [Privacidad](docs/privacidad.md) | Política de privacidad de la app |
 | [Hoja de ruta](docs/hoja-de-ruta.md) | Pendiente tras el MVP, incluida la barra publicitaria |
 | [Git y publicación](docs/git-y-publicacion.md) | Comandos para crear el repositorio y trabajar con ramas |

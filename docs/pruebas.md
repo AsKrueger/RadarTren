@@ -35,12 +35,13 @@ En un Pixel 10 Pro XL con Android 37, el 1 de noviembre de 2026:
 - Ficha de un tren al pulsarlo.
 - El 2 de noviembre de 2026, incidencias en tiempo real con datos de un lunes: 20 anillos en el mapa, contador en la pestaña, lista con hora de actualización, y al pulsar una incidencia el mapa la enfoca y abre su ficha. El retraso del tren pasó de +121 a +122 minutos y el total bajó de 20 a 18 sin tocar nada. A los 84 segundos apareció una incidencia nueva como aviso dentro de la app ("Media: C5 71851: +39 min", con botón Ver).
 - PDF revisado visualmente.
+- Lenguaje claro con la letra del móvil al 130 %: bienvenida, mapa, ayuda y aviso de un problema nuevo caben sin cortes.
 
 ## Sin probar
 
 - En un móvil físico.
 - Recepción visible de una notificación real. El permiso y el filtrado sí están cubiertos, pero no se vio una llegar.
-- Búsqueda de trenes y botones de zoom.
+- Búsqueda por estación en el dispositivo, botones de zoom, botones de llamada de la ayuda y la ficha de tren con los textos nuevos.
 - Exportación CSV, botones de borrado y envío de comentarios, incluido el aviso si no hay app de correo.
 - Comportamiento del worker a lo largo de días, con ahorro de batería de cada fabricante.
 - Consumo real de datos y batería.

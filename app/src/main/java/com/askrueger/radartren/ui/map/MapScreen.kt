@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MyLocation
@@ -77,6 +78,8 @@ import com.askrueger.radartren.report.displayText
 import com.askrueger.radartren.ui.common.categoryLabel
 import com.askrueger.radartren.ui.common.clock
 import com.askrueger.radartren.ui.common.delayColorHex
+import com.askrueger.radartren.ui.common.durationText
+import com.askrueger.radartren.ui.help.HelpSheet
 import com.askrueger.radartren.ui.common.label
 import com.askrueger.radartren.ui.common.severityColor
 import com.askrueger.radartren.ui.common.severityColorHex
@@ -143,6 +146,7 @@ fun MapScreen(
     var family by rememberSaveable { mutableStateOf<ProductFamily?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     var searching by rememberSaveable { mutableStateOf(false) }
+    var help by rememberSaveable { mutableStateOf(false) }
     var selectedId by remember { mutableStateOf<String?>(null) }
     var selectedIncident by remember { mutableStateOf<String?>(null) }
     var map by remember { mutableStateOf<MapLibreMap?>(null) }
@@ -152,11 +156,10 @@ fun MapScreen(
     val all = live?.snapshot?.trains.orEmpty()
     val counts = remember(all) { all.groupingBy { it.family }.eachCount() }
     val trains = remember(all, family, query) {
-        val needle = query.trim().lowercase()
+        val needle = fold(query.trim())
         all.filter { train ->
             (family == null || train.family == family) &&
-                (needle.isEmpty() || listOfNotNull(train.label, train.number, train.destination, train.core?.displayName)
-                    .any { needle in it.lowercase() })
+                (needle.isEmpty() || train.searchTerms().any { needle in it })
         }
     }
     val selected = all.firstOrNull { it.id == selectedId }
@@ -193,6 +196,9 @@ fun MapScreen(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
+                        IconButton(onClick = { help = true }) {
+                            Icon(Icons.AutoMirrored.Filled.HelpOutline, stringResource(R.string.map_help))
+                        }
                         IconButton(onClick = {
                             searching = !searching
                             if (!searching) query = ""
@@ -244,7 +250,18 @@ fun MapScreen(
     if (incident != null) {
         ModalBottomSheet(onDismissRequest = { selectedIncident = null }) { IncidentDetails(incident) }
     }
+    if (help) HelpSheet { help = false }
 }
+
+/**
+ * What people may type: line, number, the station it is at or going to, origin, destination or
+ * network. Accents are ignored, so "Atocha" finds "Madrid-Puerta de Atocha".
+ */
+private fun Train.searchTerms(): List<String> =
+    listOfNotNull(label, number, nextStation, origin, destination, core?.displayName).map(::fold)
+
+private fun fold(text: String): String =
+    java.text.Normalizer.normalize(text, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase()
 
 @Composable
 private fun IncidentPill(incidents: List<IncidentEntity>, onClick: () -> Unit) {
@@ -501,7 +518,10 @@ private fun TrainMap(
                     Feature.fromGeometry(Point.fromLngLat(train.longitude, train.latitude)).apply {
                         addStringProperty("id", train.id)
                         addStringProperty("color", delayColorHex(train.delayLevel))
-                        addStringProperty("label", train.label ?: train.number)
+                        // The delay is also written, so the map can be read without telling colours apart.
+                        val name = train.label ?: train.number
+                        val late = train.delayMinutes?.takeIf { it >= 5 }
+                        addStringProperty("label", if (late != null) "$name +$late'" else name)
                     }
                 },
             ),
@@ -620,40 +640,44 @@ private fun addRailLayers(style: Style, stations: List<Station>, colors: MapColo
 
 @Composable
 private fun TrainDetails(train: Train) {
+    val context = LocalContext.current
     Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
+        // The answer people come for, in one line and in the colour of the map dot.
+        val delay = train.delayMinutes
         Text(
-            "${train.label.orEmpty()} ${train.number}".trim(),
+            when {
+                delay == null -> stringResource(R.string.train_headline_unknown)
+                delay < 5 -> stringResource(R.string.train_headline_on_time)
+                else -> stringResource(R.string.train_headline_late, durationText(context, delay))
+            },
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
+            color = Color(android.graphics.Color.parseColor(delayColorHex(train.delayLevel))),
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            train.core?.displayName ?: stringResource(R.string.service_long_distance),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            if (train.label != null) stringResource(R.string.train_line_number, train.label, train.number)
+            else stringResource(R.string.train_number, train.number),
+            style = MaterialTheme.typography.titleMedium,
         )
         Spacer(Modifier.height(14.dp))
+        val station = train.nextStation
         Detail(
-            stringResource(R.string.train_delay),
-            when (val delay = train.delayMinutes) {
-                null -> stringResource(R.string.train_delay_unknown)
-                in Int.MIN_VALUE..0 -> stringResource(R.string.train_on_time)
-                else -> stringResource(R.string.train_delay_minutes, delay)
+            stringResource(R.string.train_now),
+            when {
+                station == null -> stringResource(R.string.train_on_the_way)
+                train.status == TrainStatus.STOPPED -> stringResource(R.string.train_stopped_at, station)
+                train.status == TrainStatus.ARRIVING -> stringResource(R.string.train_arriving_at, station)
+                else -> stringResource(R.string.train_heading_to, station)
             },
         )
-        Detail(
-            stringResource(R.string.train_status),
-            stringResource(
-                when (train.status) {
-                    TrainStatus.STOPPED -> R.string.status_stopped
-                    TrainStatus.ARRIVING -> R.string.status_arriving
-                    TrainStatus.MOVING -> R.string.status_moving
-                },
-            ),
-        )
-        train.nextStation?.let { Detail(stringResource(R.string.train_next_station), it) }
         if (train.origin != null && train.destination != null) {
-            Detail(stringResource(R.string.train_route), "${train.origin} → ${train.destination}")
+            Detail(stringResource(R.string.train_journey), stringResource(R.string.train_from_to, train.origin, train.destination))
         }
+        Detail(
+            stringResource(R.string.train_network),
+            train.core?.displayName ?: stringResource(R.string.service_long_distance),
+        )
     }
 }
 

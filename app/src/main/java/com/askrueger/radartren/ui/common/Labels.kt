@@ -70,6 +70,17 @@ fun periodTitle(period: ReportPeriod, locale: Locale): String = when (period.typ
     PeriodType.YEAR -> period.start.year.toString()
 }
 
+/** A duration as people say it: "45 min", "2 h", "2 h 1 min". */
+fun durationText(context: Context, minutes: Int): String {
+    val hours = minutes / 60
+    val rest = minutes % 60
+    return when {
+        hours == 0 -> context.getString(R.string.duration_minutes, minutes)
+        rest == 0 -> context.getString(R.string.duration_hours, hours)
+        else -> context.getString(R.string.duration_hours_minutes, hours, rest)
+    }
+}
+
 /** A time of day in the phone's zone, for "since 10:41" style labels. */
 fun clock(epochSeconds: Long, seconds: Boolean = false): String =
     java.time.Instant.ofEpochSecond(epochSeconds).atZone(java.time.ZoneId.systemDefault())

@@ -2,6 +2,13 @@
 
 ## Sin publicar
 
+- Lenguaje claro en toda la app, en español e inglés, pensado para personas sin experiencia (`docs/lenguaje-claro.md`).
+- Los problemas se cuentan con frases completas: "El tren C2 84906 va con 2 h 1 min de retraso".
+- La ficha del tren responde primero: "Va a su hora" o "Va 12 min tarde", dónde está ahora y de dónde a dónde va.
+- Pantalla "Cómo usar RadarTren", con botones para llamar a Renfe y al 112, desde el mapa y desde Ajustes.
+- La búsqueda encuentra estaciones (la actual o la siguiente, el origen y el destino) e ignora acentos.
+- En el mapa, los trenes con retraso llevan escrito "+12'" al acercarse, para no depender solo del color.
+- Los informes PDF empiezan con una frase sencilla: cuántos de cada 10 trenes iban a su hora y cuántos problemas hubo.
 - Incidencias en tiempo real: anillos con pulso en el mapa que siguen al tren afectado, contador de activas y ficha al pulsarlas.
 - La lista de incidencias indica la hora de la última actualización, desde cuándo dura cada una y lleva al mapa.
 - Las incidencias nuevas salen como aviso dentro de la app mientras está abierta; las notificaciones del sistema se limitan a 3 más un resumen.

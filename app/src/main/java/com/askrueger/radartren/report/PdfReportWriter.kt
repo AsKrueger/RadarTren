@@ -137,6 +137,10 @@ class PdfReportWriter(private val context: Context) {
         }
 
         fun coverageNotice(data: ReportData) {
+            // One plain sentence first, for readers who will not look at the figures.
+            val easy = data.punctuality?.let { context.getString(R.string.report_easy, "%.0f".format(locale, it * 10), data.totalIncidents) }
+                ?: context.getString(R.string.report_easy_no_data)
+            paragraph(easy, text(13f, ink, bold = true), gap = 10f)
             val observed = percent(data.coverage)
             paragraph(context.getString(R.string.report_coverage, observed, data.samples), body)
             if (data.coverage < LOW_COVERAGE) paragraph(context.getString(R.string.report_low_coverage), small)
