@@ -20,6 +20,11 @@ import com.askrueger.radartren.ui.common.label
 
 /** One channel per urgency, so people can tune each level from Android settings too. */
 object Notifier {
+    /** Beyond this, one summary replaces individual notifications, as on a first run. */
+    const val MAX_INDIVIDUAL = 3
+    private const val GROUP = "incidents"
+    private const val SUMMARY_ID = 1
+
     private fun channel(severity: Severity) = when {
         severity >= Severity.CRITICAL -> "critical"
         severity == Severity.HIGH -> "high"
@@ -39,16 +44,18 @@ object Notifier {
         )
     }
 
-    fun notify(context: Context, incidents: List<IncidentEntity>) {
-        if (incidents.isEmpty()) return
+    /** Returns how many notifications were posted, so callers and tests can check the outcome. */
+    fun notify(context: Context, incidents: List<IncidentEntity>): Int {
+        if (incidents.isEmpty()) return 0
         val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
             PackageManager.PERMISSION_GRANTED
-        if (!granted) return
+        if (!granted) return 0
         val open = PendingIntent.getActivity(
             context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
         )
         val manager = NotificationManagerCompat.from(context)
-        incidents.forEach { incident ->
+        val ordered = incidents.sortedByDescending { it.severity }
+        ordered.take(MAX_INDIVIDUAL).forEach { incident ->
             val source = context.getString(
                 if (incident.source == IncidentSource.OFFICIAL) R.string.source_official else R.string.source_detected,
             )
@@ -60,9 +67,25 @@ object Notifier {
                 .setContentText(body)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(body).setSummaryText(source))
                 .setContentIntent(open)
+                .setGroup(GROUP)
                 .setAutoCancel(true)
                 .build()
             manager.notify(incident.key.hashCode(), notification)
         }
+        val rest = ordered.size - MAX_INDIVIDUAL
+        if (rest > 0) {
+            val text = context.resources.getQuantityString(R.plurals.notification_more, rest, rest)
+            val summary = NotificationCompat.Builder(context, channel(ordered.first().severity))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(context.resources.getQuantityString(R.plurals.notification_summary, ordered.size, ordered.size))
+                .setContentText(text)
+                .setContentIntent(open)
+                .setGroup(GROUP)
+                .setGroupSummary(true)
+                .setAutoCancel(true)
+                .build()
+            manager.notify(SUMMARY_ID, summary)
+        }
+        return ordered.size.coerceAtMost(MAX_INDIVIDUAL) + if (rest > 0) 1 else 0
     }
 }

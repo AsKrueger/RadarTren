@@ -11,7 +11,7 @@ App Android que muestra en un mapa en vivo los trenes de Renfe en España, detec
 | Función | Detalle |
 |---|---|
 | Mapa en vivo | Cercanías, Rodalies, alta velocidad, larga y media distancia, sobre la red ferroviaria real. Tema oscuro y claro, color según retraso, filtros por producto con contador, cifras en vivo, búsqueda y ficha de cada tren |
-| Incidencias | Detectadas con retrasos y cancelaciones en vivo, más los avisos oficiales de Renfe clasificados por urgencia |
+| Incidencias en tiempo real | Detectadas con retrasos y cancelaciones en vivo, más los avisos oficiales de Renfe clasificados por urgencia. Se marcan en el mapa con un anillo que sigue al tren, se actualizan en cada refresco y se abren desde la lista |
 | Alertas | Notificaciones por urgencia, con umbral configurable |
 | Informes PDF | Día, semana, mes y año, con cobertura real, compartibles |
 | Salud de las fuentes | Detecta si una fuente deja de actualizarse y nunca la presenta como actual |

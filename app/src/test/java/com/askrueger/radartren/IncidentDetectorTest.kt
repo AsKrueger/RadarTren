@@ -64,4 +64,23 @@ class IncidentDetectorTest {
             .let { detect(it) }.map { it.key }.toSet()
         assertEquals(1, keys.size)
     }
+
+    @Test
+    fun `incidents carry where to draw them`() {
+        val train = detect(listOf(train(1, 130).copy(latitude = 41.5, longitude = 2.1))).single()
+        assertEquals(41.5, train.latitude!!, 0.0)
+
+        val area = detect(List(10) { train(it, 20) }).single { it.category == IncidentCategory.DISRUPTION }
+        assertEquals(Core.MADRID.latitude, area.latitude!!, 0.0)
+
+        val longDistance = detect(List(10) { train(it, 20, core = null) }).single { it.category == IncidentCategory.DISRUPTION }
+        assertEquals(null, longDistance.latitude)
+    }
+
+    @Test
+    fun `commuter trains of an unknown network are not counted as long distance`() {
+        val unknown = List(10) { train(it, 40, core = null).copy(service = Service.COMMUTER) }
+        val onTime = List(10) { train(it + 20, 0, core = null) }
+        assertTrue(detect(unknown + onTime).none { it.category == IncidentCategory.DISRUPTION })
+    }
 }

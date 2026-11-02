@@ -2,6 +2,12 @@
 
 ## Sin publicar
 
+- Incidencias en tiempo real: anillos con pulso en el mapa que siguen al tren afectado, contador de activas y ficha al pulsarlas.
+- La lista de incidencias indica la hora de la última actualización, desde cuándo dura cada una y lleva al mapa.
+- Las incidencias nuevas salen como aviso dentro de la app mientras está abierta; las notificaciones del sistema se limitan a 3 más un resumen.
+- Contador de incidencias en la pestaña.
+- Corregido: los trenes de Cercanías de un núcleo desconocido se contaban como larga distancia.
+- Base de datos versión 2, con migración automática.
 - Rediseño del mapa: tema oscuro, red ferroviaria real de OpenStreetMap, alta velocidad destacada y estaciones.
 - Chips por producto con contador, cifras en vivo, línea de estado con trenes sin posición y controles de zoom.
 - El mapa guardado incluye los estilos claro y oscuro.

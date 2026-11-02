@@ -9,6 +9,7 @@
 | `IncidentDetectorTest` | `app/src/test` | Umbrales de detección |
 | `NetworkStatsTest` | `app/src/test` | Familias de producto y cifras del mapa |
 | `ReportBuilderTest` | `app/src/test` | Periodos, cifras, cobertura y cambio de hora |
+| `RealtimeTest` | `app/src/androidTest` | Migración de una base de datos v1 real, tope de notificaciones y avisos dentro de la app en primer plano |
 | `DeviceTest` | `app/src/androidTest` | Feed congelado sin notificar, ciclo de vida, muestras, PDF, y worker completo contra los feeds reales |
 
 ```powershell
@@ -32,6 +33,7 @@ En un Pixel 10 Pro XL con Android 37, el 1 de noviembre de 2026:
 - Tema oscuro y claro, cambiados con la app abierta.
 - Chips por producto con contador y cifras del mapa filtradas.
 - Ficha de un tren al pulsarlo.
+- El 2 de noviembre de 2026, incidencias en tiempo real con datos de un lunes: 20 anillos en el mapa, contador en la pestaña, lista con hora de actualización, y al pulsar una incidencia el mapa la enfoca y abre su ficha. El retraso del tren pasó de +121 a +122 minutos y el total bajó de 20 a 18 sin tocar nada. A los 84 segundos apareció una incidencia nueva como aviso dentro de la app ("Media: C5 71851: +39 min", con botón Ver).
 - PDF revisado visualmente.
 
 ## Sin probar

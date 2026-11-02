@@ -3,6 +3,7 @@ package com.askrueger.radartren.ui.map
 import android.graphics.PointF
 import android.os.Bundle
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -60,15 +62,25 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.askrueger.radartren.R
 import com.askrueger.radartren.data.LiveData
+import com.askrueger.radartren.data.local.IncidentEntity
 import com.askrueger.radartren.data.mapStyleUrl
 import com.askrueger.radartren.domain.DelayLevel
 import com.askrueger.radartren.domain.Feed
+import com.askrueger.radartren.domain.IncidentSource
 import com.askrueger.radartren.domain.NetworkStats
 import com.askrueger.radartren.domain.ProductFamily
+import com.askrueger.radartren.domain.Severity
 import com.askrueger.radartren.domain.Station
 import com.askrueger.radartren.domain.Train
 import com.askrueger.radartren.domain.TrainStatus
+import com.askrueger.radartren.report.displayText
+import com.askrueger.radartren.ui.common.categoryLabel
+import com.askrueger.radartren.ui.common.clock
 import com.askrueger.radartren.ui.common.delayColorHex
+import com.askrueger.radartren.ui.common.label
+import com.askrueger.radartren.ui.common.severityColor
+import com.askrueger.radartren.ui.common.severityColorHex
+import kotlinx.coroutines.delay
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -89,8 +101,13 @@ import java.net.URI
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.math.sin
 
 private const val TRAINS = "trains"
+private const val INCIDENTS = "incidents"
+private const val RINGS = "incident-rings"
+private const val FOCUS_ZOOM = 10.0
+private const val PULSE_FRAME_MILLIS = 80L
 private const val NETWORK = "network"
 private const val STATIONS = "stations"
 private const val DOTS = "train-dots"
@@ -103,20 +120,33 @@ private const val SPAIN_ZOOM = 4.8
 /** Colors drawn by the map engine, which sit outside the Compose theme. */
 private class MapColors(dark: Boolean) {
     val highSpeed = if (dark) "#6C93C4" else "#0F4C81"
-    val conventional = if (dark) "#47586E" else "#8FA0B3"
+    val conventional = if (dark) "#5E7591" else "#8FA0B3"
     val halo = if (dark) "#0E1621" else "#FFFFFF"
     val text = if (dark) "#E8EDF3" else "#18202C"
     val station = if (dark) "#C4D0DE" else "#3A4656"
 }
 
+/** A request to center the map on an incident, sent from the incidents list or a snackbar. */
+data class MapFocus(val latitude: Double, val longitude: Double, val incidentKey: String)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(live: LiveData?, stations: List<Station>, modifier: Modifier = Modifier) {
+fun MapScreen(
+    live: LiveData?,
+    stations: List<Station>,
+    incidents: List<IncidentEntity>,
+    focus: MapFocus?,
+    onFocusShown: () -> Unit,
+    onOpenIncidents: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var family by rememberSaveable { mutableStateOf<ProductFamily?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     var searching by rememberSaveable { mutableStateOf(false) }
     var selectedId by remember { mutableStateOf<String?>(null) }
+    var selectedIncident by remember { mutableStateOf<String?>(null) }
     var map by remember { mutableStateOf<MapLibreMap?>(null) }
+    val onMap = remember(incidents) { incidents.filter { it.hasLocation && it.severity >= Severity.MEDIUM } }
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     val all = live?.snapshot?.trains.orEmpty()
@@ -130,15 +160,26 @@ fun MapScreen(live: LiveData?, stations: List<Station>, modifier: Modifier = Mod
         }
     }
     val selected = all.firstOrNull { it.id == selectedId }
+    val incident = incidents.firstOrNull { it.key == selectedIncident }
+
+    LaunchedEffect(focus, map) {
+        val target = focus ?: return@LaunchedEffect
+        val ready = map ?: return@LaunchedEffect
+        ready.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(target.latitude, target.longitude), FOCUS_ZOOM))
+        selectedIncident = target.incidentKey
+        onFocusShown()
+    }
 
     Box(modifier.fillMaxSize()) {
         key(dark) {
             TrainMap(
                 trains = trains,
                 stations = stations,
+                incidents = onMap,
                 dark = dark,
                 onReady = { map = it },
                 onTrainClick = { selectedId = it },
+                onIncidentClick = { selectedIncident = it },
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -176,6 +217,9 @@ fun MapScreen(live: LiveData?, stations: List<Station>, modifier: Modifier = Mod
                 }
             }
             FamilyChips(counts, all.size, family) { family = it }
+            if (onMap.isNotEmpty() || incidents.isNotEmpty()) {
+                IncidentPill(incidents, onOpenIncidents)
+            }
         }
         Column(
             Modifier.align(Alignment.CenterEnd).padding(end = 10.dp),
@@ -196,6 +240,61 @@ fun MapScreen(live: LiveData?, stations: List<Station>, modifier: Modifier = Mod
 
     if (selected != null) {
         ModalBottomSheet(onDismissRequest = { selectedId = null }) { TrainDetails(selected) }
+    }
+    if (incident != null) {
+        ModalBottomSheet(onDismissRequest = { selectedIncident = null }) { IncidentDetails(incident) }
+    }
+}
+
+@Composable
+private fun IncidentPill(incidents: List<IncidentEntity>, onClick: () -> Unit) {
+    val notable = incidents.filter { it.severity >= Severity.MEDIUM }
+    if (notable.isEmpty()) return
+    val worst = notable.maxOf { it.severity }
+    Panel(Modifier.padding(top = 6.dp).clickable(onClick = onClick)) {
+        Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(10.dp).background(severityColor(worst), CircleShape))
+            Spacer(Modifier.size(8.dp))
+            Text(
+                pluralStringResource(R.plurals.map_active_incidents, notable.size, notable.size),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun IncidentDetails(incident: IncidentEntity) {
+    val context = LocalContext.current
+    Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 28.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(12.dp).background(severityColor(incident.severity), CircleShape))
+            Spacer(Modifier.size(10.dp))
+            Text(
+                "${label(context, incident.severity)} · ${categoryLabel(context, incident.category)}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        Spacer(Modifier.height(10.dp))
+        Text(incident.displayText(context), style = MaterialTheme.typography.bodyLarge)
+        Spacer(Modifier.height(14.dp))
+        Detail(stringResource(R.string.incident_area), incident.core?.displayName ?: stringResource(R.string.service_long_distance))
+        Detail(
+            stringResource(R.string.incident_source),
+            stringResource(if (incident.source == IncidentSource.OFFICIAL) R.string.source_official else R.string.source_detected),
+        )
+        Detail(stringResource(R.string.incident_first_seen), clock(incident.firstSeen))
+        Detail(stringResource(R.string.incident_last_seen), clock(incident.lastSeen, seconds = true))
+        if (incident.source == IncidentSource.DETECTED) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.incident_detected_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -333,14 +432,17 @@ private fun LegendItem(level: DelayLevel, label: Int) {
 private fun TrainMap(
     trains: List<Train>,
     stations: List<Station>,
+    incidents: List<IncidentEntity>,
     dark: Boolean,
     onReady: (MapLibreMap) -> Unit,
     onTrainClick: (String) -> Unit,
+    onIncidentClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val onClick by rememberUpdatedState(onTrainClick)
+    val onIncident by rememberUpdatedState(onIncidentClick)
     val ready by rememberUpdatedState(onReady)
     var loaded by remember { mutableStateOf<Style?>(null) }
 
@@ -355,9 +457,12 @@ private fun TrainMap(
                 map.uiSettings.isTiltGesturesEnabled = false
                 map.addOnMapClickListener { point ->
                     val screen: PointF = map.projection.toScreenLocation(point)
-                    val hit = map.queryRenderedFeatures(screen, DOTS).firstOrNull()
-                    hit?.getStringProperty("id")?.let { onClick(it) }
-                    hit != null
+                    // Trains win over the ring around them, so a delayed train opens its own sheet.
+                    val train = map.queryRenderedFeatures(screen, DOTS).firstOrNull()
+                    val ring = if (train == null) map.queryRenderedFeatures(screen, RINGS).firstOrNull() else null
+                    train?.getStringProperty("id")?.let { onClick(it) }
+                    ring?.getStringProperty("key")?.let { onIncident(it) }
+                    train != null || ring != null
                 }
                 map.setStyle(Style.Builder().fromUri(mapStyleUrl(dark))) { style ->
                     addRailLayers(style, stations, MapColors(dark))
@@ -403,10 +508,41 @@ private fun TrainMap(
         )
     }
 
+    LaunchedEffect(loaded, incidents) {
+        val source = loaded?.getSourceAs<GeoJsonSource>(INCIDENTS) ?: return@LaunchedEffect
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                incidents.map { incident ->
+                    Feature.fromGeometry(Point.fromLngLat(incident.longitude!!, incident.latitude!!)).apply {
+                        addStringProperty("key", incident.key)
+                        addStringProperty("color", severityColorHex(incident.severity))
+                        addNumberProperty("rank", incident.severity.ordinal)
+                    }
+                },
+            ),
+        )
+    }
+
+    // A slow pulse marks the rings as live. It only runs while there is something to show.
+    LaunchedEffect(loaded, incidents.isNotEmpty()) {
+        val rings = loaded?.getLayerAs<CircleLayer>(RINGS) ?: return@LaunchedEffect
+        if (incidents.isEmpty()) return@LaunchedEffect
+        var phase = 0.0
+        while (true) {
+            phase = (phase + 0.07) % (2 * Math.PI)
+            val wave = ((sin(phase) + 1) / 2).toFloat()
+            rings.setProperties(
+                PropertyFactory.circleStrokeOpacity(0.45f + 0.55f * wave),
+                PropertyFactory.circleOpacity(0.10f + 0.14f * wave),
+            )
+            delay(PULSE_FRAME_MILLIS)
+        }
+    }
+
     AndroidView(factory = { mapView }, modifier = modifier)
 }
 
-/** The drawing order, bottom to top: rail network, stations, trains, labels. */
+/** The drawing order, bottom to top: rail network, stations, incident rings, trains, labels. */
 private fun addRailLayers(style: Style, stations: List<Station>, colors: MapColors) {
     style.addSource(GeoJsonSource(NETWORK, URI("asset://catalog/network.geojson")))
     style.addSource(
@@ -417,6 +553,7 @@ private fun addRailLayers(style: Style, stations: List<Station>, colors: MapColo
             ),
         ),
     )
+    style.addSource(GeoJsonSource(INCIDENTS))
     style.addSource(GeoJsonSource(TRAINS))
 
     fun railLayer(id: String, highSpeed: Int, color: String, thin: Float, wide: Float) =
@@ -439,6 +576,21 @@ private fun addRailLayers(style: Style, stations: List<Station>, colors: MapColo
             PropertyFactory.circleStrokeColor(colors.halo),
             PropertyFactory.circleStrokeWidth(0.8f),
         ).apply { minZoom = STATION_MIN_ZOOM },
+    )
+    style.addLayer(
+        CircleLayer(RINGS, INCIDENTS).withProperties(
+            PropertyFactory.circleColor(Expression.get("color")),
+            PropertyFactory.circleOpacity(0.18f),
+            PropertyFactory.circleStrokeColor(Expression.get("color")),
+            PropertyFactory.circleStrokeWidth(2.5f),
+            PropertyFactory.circleRadius(
+                Expression.interpolate(
+                    Expression.linear(), Expression.zoom(),
+                    Expression.stop(4, 11f), Expression.stop(10, 18f), Expression.stop(14, 26f),
+                ),
+            ),
+            PropertyFactory.circleSortKey(Expression.get("rank")),
+        ),
     )
     style.addLayer(
         CircleLayer(DOTS, TRAINS).withProperties(

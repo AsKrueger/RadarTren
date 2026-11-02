@@ -65,6 +65,18 @@ Un servidor con recogida continua y notificaciones push resolvería ambas cosas,
 
 **Idioma.** Se aplica solo cuando se elige en Ajustes, para respetar también el idioma por app de Android. Workers y notificaciones usan `localized()` porque corren fuera de una actividad.
 
+## Incidencias en tiempo real
+
+Con la app abierta, cada refresco (15, 30 o 60 segundos) ejecuta el ciclo completo: lee los feeds, recalcula las incidencias y actualiza Room, de modo que la lista y el mapa cambian solos. "En tiempo real" significa al ritmo de los feeds de Renfe, que se actualizan cada 15 a 30 segundos. No es instantáneo.
+
+- **Ubicación.** Cada incidencia guarda dónde dibujarse: la posición del tren en las de tren, que se mueve con él en cada refresco; la estación citada en los avisos oficiales; o la ciudad principal del núcleo en las de red (`Core.latitude`). Las de larga distancia en conjunto no tienen un punto y solo aparecen en la lista.
+- **Mapa.** Las incidencias activas y verificadas de urgencia Media o superior se dibujan como anillos con un pulso suave, por debajo de los trenes, para que pulsar un tren abra su ficha. Si se pulsa el anillo, se abre la ficha de la incidencia.
+- **Avisos.** Con la app en pantalla, las incidencias nuevas o que empeoran, de urgencia Media o superior, salen como aviso dentro de la app, con un botón para verlas en el mapa, y no como notificación del sistema. Con la app cerrada se notifican según el umbral de Ajustes, con un máximo de 3 notificaciones más un resumen, para que un primer arranque no inunde el móvil.
+- **Contadores.** La pestaña Incidencias muestra cuántas activas hay de urgencia Media o superior, en rojo si alguna es Alta o Crítica.
+- **Base de datos.** La versión 2 añade `latitude` y `longitude` a `incident` mediante una migración automática de Room. Las incidencias guardadas por la versión 0.1.0 se conservan, sin ubicación.
+
+Las incidencias que ya existen al abrir la app no generan aviso: se ven en la lista y el mapa. El aviso es para lo que aparece mientras se mira.
+
 ## Retención y consumo
 
 - Incidencias y muestras se conservan 2 años, y después se borran.

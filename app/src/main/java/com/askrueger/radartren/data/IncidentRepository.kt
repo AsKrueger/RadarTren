@@ -67,6 +67,8 @@ class IncidentRepository(private val database: RadarDatabase, private val catalo
             lastSeen = now,
             resolvedAt = null,
             verified = verified || existing?.verified == true,
+            latitude = draft.latitude ?: existing?.latitude,
+            longitude = draft.longitude ?: existing?.longitude,
         )
         incidents.upsert(merged)
         val isNews = existing == null || existing.resolvedAt != null || merged.severity > existing.severity

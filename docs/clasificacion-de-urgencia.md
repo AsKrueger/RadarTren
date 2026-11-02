@@ -35,7 +35,7 @@ Si el texto menciona obras o un plan alternativo, baja a Obras programadas salvo
 
 ## Umbrales de detección
 
-Están en `IncidentDetector.kt`, calibrados con los feeds de un domingo por la mañana (439 servicios). **Es una sola muestra**, y hay que recalibrar con datos de días laborables y de días con incidencias reales.
+Están en `IncidentDetector.kt`, calibrados con los feeds de un domingo por la mañana (439 servicios) y revisados con los de un lunes a las 11:07 (502 servicios). Falta contrastarlos con un día de incidencias graves reales.
 
 | Situación | Media | Alta |
 |---|---|---|
@@ -47,6 +47,10 @@ Decisiones tomadas tras probarlo con datos reales:
 
 - El umbral de Alta de un tren pasó de 60 a 120 minutos, porque 3 trenes superaban 60 en esa muestra y habrían sonado cada día.
 - Las cancelaciones pasaron de cifra absoluta a proporción. Larga distancia tenía 12 en un día normal, sobre 147 trenes, y salía como Alta.
+
+Resultado del lunes 2 de noviembre de 2026 a las 11:07: 190 trenes con 5 minutos o más de retraso, 24 con 30 o más y ninguno con 120. Solo Murcia/Alicante llegó a Alta por red, con 5 de 12 trenes, el 42 %, con 15 minutos o más. Larga distancia quedó en el 23 %, por debajo de Media. Las cancelaciones no superaron el 10 % en ninguna red. Con el umbral por defecto en Alta, eso supone pocas notificaciones en un día laborable normal, así que los umbrales se mantienen.
+
+Los trenes de Cercanías de un núcleo que la app no conoce (como el prefijo `SP` visto ese lunes) no cuentan en ninguna red, para no mezclarse con larga distancia.
 
 Los trenes de larga distancia cuentan como una sola red, de modo que una incidencia en un corredor concreto puede quedar diluida. Detectar por corredor está en la hoja de ruta.
 

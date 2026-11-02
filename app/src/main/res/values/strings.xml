@@ -10,6 +10,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_share">Share</string>
+    <string name="action_view">View</string>
 
     <string name="disclaimer_title">Before you start</string>
     <string name="disclaimer_body">RadarTren is an independent app that shows public Renfe data. It is not an official safety system, it is not affiliated with Renfe or Adif, and it can be incomplete or late.\n\nDo not make safety decisions with it. In an emergency call 112.</string>
@@ -77,6 +78,33 @@
     <string name="incidents_unverified">Unverified</string>
     <string name="incidents_unverified_note">These notices come from a Renfe source that has stopped updating. They may no longer apply, so they raise no alerts and stay out of the reports.</string>
     <string name="incidents_empty">Nothing to show here.</string>
+    <string name="incidents_live">Live · updated at %1$s</string>
+    <string name="incidents_not_live">Live data unavailable · last update at %1$s</string>
+    <string name="incident_since">since %1$s</string>
+    <string name="incident_period">%1$s – %2$s</string>
+    <string name="incident_area">Network</string>
+    <string name="incident_source">Source</string>
+    <string name="incident_first_seen">First seen</string>
+    <string name="incident_last_seen">Last confirmed</string>
+    <string name="incident_detected_note">Detected from live delays and cancellations. It describes what the data shows, not its cause.</string>
+    <string name="incident_show_on_map">Show on map</string>
+    <string name="snackbar_new_incident">New incident, %1$s: %2$s</string>
+    <plurals name="snackbar_more">
+        <item quantity="one">(+%1$d more)</item>
+        <item quantity="other">(+%1$d more)</item>
+    </plurals>
+    <plurals name="map_active_incidents">
+        <item quantity="one">%1$d active incident</item>
+        <item quantity="other">%1$d active incidents</item>
+    </plurals>
+    <plurals name="notification_summary">
+        <item quantity="one">%1$d new incident</item>
+        <item quantity="other">%1$d new incidents</item>
+    </plurals>
+    <plurals name="notification_more">
+        <item quantity="one">And %1$d more. Open RadarTren to see them all.</item>
+        <item quantity="other">And %1$d more. Open RadarTren to see them all.</item>
+    </plurals>
 
     <string name="reports_empty">Reports appear when a day, week, month or year ends with data collected. Keep background collection on to fill them.</string>
     <string name="reports_coverage">Observed: %1$d%% of the period</string>

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 
 private val DarkColorScheme = darkColorScheme(
     primary = NavyLight,
+    inversePrimary = Navy,
     primaryContainer = DeepNavy,
     onPrimaryContainer = IceBlue,
     secondary = SlateLight,
@@ -25,6 +26,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = Navy,
+    inversePrimary = NavyLight,
     primaryContainer = IceBlue,
     onPrimaryContainer = DeepNavy,
     secondary = Slate,

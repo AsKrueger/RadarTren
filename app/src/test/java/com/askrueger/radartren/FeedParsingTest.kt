@@ -80,6 +80,7 @@ class FeedParsingTest {
     @Test
     fun `every real notice gets a sensible class`() {
         val drafts = IncidentDetector.officialAlerts(feed("alerts"), catalog)
+        assertTrue("located: ${drafts.count { it.latitude != null }}", drafts.count { it.latitude != null } > drafts.size * 0.9)
         assertTrue(drafts.none { it.severity == Severity.CRITICAL })
         assertTrue(drafts.count { it.severity == Severity.HIGH } in 1..12)
         val lifts = drafts.filter { "scensor" in it.text }

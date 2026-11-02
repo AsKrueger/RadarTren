@@ -1,6 +1,7 @@
 package com.askrueger.radartren.data.local
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
@@ -40,8 +41,12 @@ data class IncidentEntity(
     val resolvedAt: Long?,
     /** False when it came from a frozen feed: shown with a warning, never notified or counted. */
     val verified: Boolean,
+    /** Follows the train on every refresh for train incidents; fixed for the others. */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 ) {
     val core: Core? get() = Core.entries.firstOrNull { it.code == coreCode }
+    val hasLocation: Boolean get() = latitude != null && longitude != null
 
     fun toReport() = ReportIncident(severity, category, source, core, text, firstSeen, lastSeen, verified)
 
@@ -141,8 +146,9 @@ class Converters {
 
 @Database(
     entities = [IncidentEntity::class, MetricSampleEntity::class, ReportEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 @TypeConverters(Converters::class)
 abstract class RadarDatabase : RoomDatabase() {

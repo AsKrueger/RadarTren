@@ -43,6 +43,8 @@ object IncidentDetector {
             lines = listOfNotNull(train.label),
             text = "${train.label.orEmpty()} ${train.number}".trim() + ": +$delay min",
             startedAt = now,
+            latitude = train.latitude,
+            longitude = train.longitude,
         )
     }
 
@@ -65,6 +67,8 @@ object IncidentDetector {
             lines = emptyList(),
             text = "$delayed/${known.size}",
             startedAt = now,
+            latitude = area?.latitude,
+            longitude = area?.longitude,
         )
     }
 
@@ -74,7 +78,8 @@ object IncidentDetector {
      */
     private fun areaCancellations(snapshot: NetworkSnapshot, now: Long): List<IncidentDraft> {
         val running = areas(snapshot)
-        return snapshot.cancelled.groupBy { it.core }.mapNotNull { (area, trips) ->
+        val countable = snapshot.cancelled.filter { it.service == Service.LONG_DISTANCE || it.core != null }
+        return countable.groupBy { it.core }.mapNotNull { (area, trips) ->
             val ratio = trips.size.toDouble() / (trips.size + running[area].orEmpty().size)
             val severity = when {
                 trips.size < AREA_MIN_CANCELLED -> return@mapNotNull null
@@ -91,12 +96,16 @@ object IncidentDetector {
                 lines = emptyList(),
                 text = "${trips.size}",
                 startedAt = now,
+                latitude = area?.latitude,
+                longitude = area?.longitude,
             )
         }
     }
 
     /** Commuter trains group by network; every long-distance train shares the null area. */
-    private fun areas(snapshot: NetworkSnapshot): Map<Core?, List<Train>> = snapshot.trains.groupBy { it.core }
+    private fun areas(snapshot: NetworkSnapshot): Map<Core?, List<Train>> =
+        // A commuter train of an unknown network must not be counted as long distance.
+        snapshot.trains.filter { it.service == Service.LONG_DISTANCE || it.core != null }.groupBy { it.core }
 
     /** Official notices as drafts. Renfe repeats a notice per network, so copies merge their lines. */
     fun officialAlerts(alerts: FeedMessage?, catalog: StaticCatalog): List<IncidentDraft> =
@@ -106,15 +115,19 @@ object IncidentDetector {
             val classification = AlertClassifier.classify(raw) ?: return@mapNotNull null
             val text = AlertClassifier.readableText(raw)
             val routes = alert.informedEntity.map { it.routeId.trim() }.filter(String::isNotEmpty)
+            val core = routes.firstNotNullOfOrNull(Core::ofId)
+            val stop = alert.informedEntity.firstNotNullOfOrNull { catalog.station(it.stopId) }
             IncidentDraft(
                 key = "alert:${entity.id}:${text.hashCode()}",
                 source = IncidentSource.OFFICIAL,
                 severity = classification.severity,
                 category = classification.category,
-                core = routes.firstNotNullOfOrNull(Core::ofId),
+                core = core,
                 lines = routes.mapNotNull { catalog.line(it)?.name }.distinct(),
                 text = text,
                 startedAt = alert.activePeriod.firstOrNull()?.start ?: 0,
+                latitude = stop?.latitude ?: core?.latitude,
+                longitude = stop?.longitude ?: core?.longitude,
             )
         }.groupBy { it.key }.values.map { copies ->
             copies.first().copy(lines = copies.flatMap { it.lines }.distinct())

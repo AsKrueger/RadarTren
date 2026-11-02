@@ -48,11 +48,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _storage = MutableStateFlow(StorageUse())
     val storage: StateFlow<StorageUse> = _storage
 
+    val announcements = container.announcements
+
     /** Runs while the app is visible; background work takes over at its own pace otherwise. */
     suspend fun pollWhileVisible() {
-        while (true) {
-            refresh()
-            delay((settings.value?.refreshSeconds ?: 30) * 1000L)
+        container.foreground = true
+        try {
+            while (true) {
+                refresh()
+                delay((settings.value?.refreshSeconds ?: 30) * 1000L)
+            }
+        } finally {
+            container.foreground = false
         }
     }
 

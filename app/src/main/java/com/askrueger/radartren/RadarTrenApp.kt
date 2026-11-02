@@ -7,8 +7,10 @@ import com.askrueger.radartren.data.LiveRepository
 import com.askrueger.radartren.data.OfflineMaps
 import com.askrueger.radartren.data.SettingsRepository
 import com.askrueger.radartren.data.Storage
+import com.askrueger.radartren.data.local.IncidentEntity
 import com.askrueger.radartren.data.local.RadarDatabase
 import com.askrueger.radartren.data.remote.RenfeClient
+import com.askrueger.radartren.domain.Severity
 import com.askrueger.radartren.domain.StaticCatalog
 import com.askrueger.radartren.report.ReportGenerator
 import com.askrueger.radartren.ui.common.localized
@@ -17,6 +19,8 @@ import com.askrueger.radartren.work.Notifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import okhttp3.Dispatcher
@@ -79,13 +83,24 @@ class AppContainer(private val app: Application) {
         )
     }
 
+    /** True while the app is on screen, where new incidents appear inside it instead. */
+    @Volatile
+    var foreground = false
+
+    private val _announcements = MutableSharedFlow<List<IncidentEntity>>(extraBufferCapacity = 8)
+    val announcements: SharedFlow<List<IncidentEntity>> = _announcements
+
     /** One full cycle: read the feeds, update the incidents and announce what is new. */
     suspend fun collect(): LiveData {
         val settings = settings.current()
         val data = live.refresh()
         val announce = incidents.record(data, System.currentTimeMillis() / 1000)
-        settings.notifyFrom?.let { threshold ->
-            Notifier.notify(localized(app, settings.language), announce.filter { it.severity >= threshold })
+        if (foreground) {
+            announce.filter { it.severity >= Severity.MEDIUM }.takeIf { it.isNotEmpty() }?.let(_announcements::tryEmit)
+        } else {
+            settings.notifyFrom?.let { threshold ->
+                Notifier.notify(localized(app, settings.language), announce.filter { it.severity >= threshold })
+            }
         }
         return data
     }

@@ -8,6 +8,7 @@
     <string name="action_cancel">Cancelar</string>
     <string name="action_delete">Borrar</string>
     <string name="action_share">Compartir</string>
+    <string name="action_view">Ver</string>
 
     <string name="disclaimer_title">Antes de empezar</string>
     <string name="disclaimer_body">RadarTren es una app independiente que muestra datos públicos de Renfe. No es un sistema oficial de seguridad, no tiene relación con Renfe ni con Adif, y sus datos pueden estar incompletos o llegar tarde.\n\nNo tomes decisiones de seguridad con ella. En una emergencia llama al 112.</string>
@@ -76,6 +77,37 @@
     <string name="incidents_unverified">Sin verificar</string>
     <string name="incidents_unverified_note">Estos avisos proceden de una fuente de Renfe que ha dejado de actualizarse. Puede que ya no estén vigentes, así que no generan alertas ni cuentan en los informes.</string>
     <string name="incidents_empty">No hay nada que mostrar aquí.</string>
+    <string name="incidents_live">En vivo · actualizado a las %1$s</string>
+    <string name="incidents_not_live">Sin datos en vivo · última actualización a las %1$s</string>
+    <string name="incident_since">desde las %1$s</string>
+    <string name="incident_period">%1$s – %2$s</string>
+    <string name="incident_area">Red</string>
+    <string name="incident_source">Origen</string>
+    <string name="incident_first_seen">Vista por primera vez</string>
+    <string name="incident_last_seen">Confirmada por última vez</string>
+    <string name="incident_detected_note">Detectada con los retrasos y cancelaciones en vivo. Describe lo que muestran los datos, no su causa.</string>
+    <string name="incident_show_on_map">Ver en el mapa</string>
+    <string name="snackbar_new_incident">Nueva incidencia, %1$s: %2$s</string>
+    <plurals name="snackbar_more">
+        <item quantity="one">(+%1$d más)</item>
+        <item quantity="many">(+%1$d más)</item>
+        <item quantity="other">(+%1$d más)</item>
+    </plurals>
+    <plurals name="map_active_incidents">
+        <item quantity="one">%1$d incidencia activa</item>
+        <item quantity="many">%1$d incidencias activas</item>
+        <item quantity="other">%1$d incidencias activas</item>
+    </plurals>
+    <plurals name="notification_summary">
+        <item quantity="one">%1$d incidencia nueva</item>
+        <item quantity="many">%1$d incidencias nuevas</item>
+        <item quantity="other">%1$d incidencias nuevas</item>
+    </plurals>
+    <plurals name="notification_more">
+        <item quantity="one">Y %1$d más. Abre RadarTren para verlas todas.</item>
+        <item quantity="many">Y %1$d más. Abre RadarTren para verlas todas.</item>
+        <item quantity="other">Y %1$d más. Abre RadarTren para verlas todas.</item>
+    </plurals>
 
     <string name="reports_empty">Los informes aparecen cuando termina un día, semana, mes o año con datos recogidos. Mantén activa la recogida en segundo plano para completarlos.</string>
     <string name="reports_coverage">Observado: %1$d%% del periodo</string>

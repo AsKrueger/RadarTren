@@ -70,6 +70,20 @@ fun periodTitle(period: ReportPeriod, locale: Locale): String = when (period.typ
     PeriodType.YEAR -> period.start.year.toString()
 }
 
+/** A time of day in the phone's zone, for "since 10:41" style labels. */
+fun clock(epochSeconds: Long, seconds: Boolean = false): String =
+    java.time.Instant.ofEpochSecond(epochSeconds).atZone(java.time.ZoneId.systemDefault())
+        .format(DateTimeFormatter.ofPattern(if (seconds) "HH:mm:ss" else "HH:mm"))
+
+/** The same colors as [severityColor], for layers drawn by the map engine. */
+fun severityColorHex(severity: Severity): String = when (severity) {
+    Severity.CRITICAL -> "#B00020"
+    Severity.HIGH -> "#D9480F"
+    Severity.MEDIUM -> "#C98A00"
+    Severity.LOW -> "#2E7D50"
+    Severity.INFO -> "#5A6676"
+}
+
 fun severityColor(severity: Severity): Color = when (severity) {
     Severity.CRITICAL -> Color(0xFFB00020)
     Severity.HIGH -> Color(0xFFD9480F)

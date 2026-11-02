@@ -91,22 +91,23 @@ data class NetworkStats(val onMap: Int, val delayed: Int, val averageDelayMinute
 }
 
 /** A Cercanías/Rodalies network. The code is the two-digit prefix of Renfe route and trip ids. */
-enum class Core(val code: String, val displayName: String) {
-    MADRID("10", "Madrid"),
-    ASTURIAS("20", "Asturias"),
-    SEVILLA("30", "Sevilla"),
-    CADIZ("31", "Cádiz"),
-    MALAGA("32", "Málaga"),
-    VALENCIA("40", "València"),
-    MURCIA_ALICANTE("41", "Murcia/Alicante"),
-    CARTAGENA("45", "Cartagena"),
-    FERROL("46", "Ferrol"),
-    LEON("47", "León"),
-    RODALIES("51", "Rodalies de Catalunya"),
-    BILBAO("60", "Bilbao"),
-    SAN_SEBASTIAN("61", "San Sebastián"),
-    SANTANDER("62", "Santander"),
-    ZARAGOZA("70", "Zaragoza");
+enum class Core(val code: String, val displayName: String, val latitude: Double, val longitude: Double) {
+    // Coordinates are the main city of each network, where its incidents are drawn on the map.
+    MADRID("10", "Madrid", 40.4168, -3.7038),
+    ASTURIAS("20", "Asturias", 43.3614, -5.8494),
+    SEVILLA("30", "Sevilla", 37.3891, -5.9845),
+    CADIZ("31", "Cádiz", 36.5271, -6.2886),
+    MALAGA("32", "Málaga", 36.7213, -4.4214),
+    VALENCIA("40", "València", 39.4699, -0.3763),
+    MURCIA_ALICANTE("41", "Murcia/Alicante", 38.3452, -0.4810),
+    CARTAGENA("45", "Cartagena", 37.6257, -0.9966),
+    FERROL("46", "Ferrol", 43.4832, -8.2369),
+    LEON("47", "León", 42.5987, -5.5671),
+    RODALIES("51", "Rodalies de Catalunya", 41.3874, 2.1686),
+    BILBAO("60", "Bilbao", 43.2630, -2.9350),
+    SAN_SEBASTIAN("61", "San Sebastián", 43.3183, -1.9812),
+    SANTANDER("62", "Santander", 43.4623, -3.8100),
+    ZARAGOZA("70", "Zaragoza", 41.6488, -0.8891);
 
     companion object {
         fun ofId(id: String): Core? = entries.firstOrNull { id.startsWith(it.code) }
@@ -136,4 +137,7 @@ data class IncidentDraft(
     val lines: List<String>,
     val text: String,
     val startedAt: Long,
+    /** Where to draw it: the train itself, the stop named by a notice, or the network's city. */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
