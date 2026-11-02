@@ -1,10 +1,12 @@
 package com.askrueger.radartren.ui.settings
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.text.format.Formatter
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -191,7 +193,11 @@ private fun sendFeedback(context: Context) {
     val subject = "RadarTren ${BuildConfig.VERSION_NAME}"
     val body = "\n\n---\nAndroid ${Build.VERSION.RELEASE} · ${Build.MANUFACTURER} ${Build.MODEL}"
     val uri = "mailto:${BuildConfig.FEEDBACK_EMAIL}?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}".toUri()
-    context.startActivity(Intent(Intent.ACTION_SENDTO, uri))
+    try {
+        context.startActivity(Intent(Intent.ACTION_SENDTO, uri))
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, R.string.feedback_no_app, Toast.LENGTH_LONG).show()
+    }
 }
 
 @Composable

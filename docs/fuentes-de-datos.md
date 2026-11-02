@@ -31,6 +31,21 @@ python tools/generate_catalog.py google_transit.zip fomento_transit.zip
 
 Un tren o estación que no esté en el catálogo se sigue mostrando, sin nombre. Conviene regenerarlo con cada cambio de horarios.
 
+### Red ferroviaria
+
+Los GTFS de larga distancia no traen trazados, así que las vías dibujadas salen de OpenStreetMap (licencia ODbL, con atribución). Están en `assets/catalog/network.geojson`, simplificadas a unos 150 m, y ocupan 340 KB.
+
+Para regenerarla, guarda en `rail.json` el resultado de esta consulta en [Overpass](https://overpass-api.de/) y ejecuta `python tools/generate_network.py rail.json`:
+
+```text
+[out:json][timeout:280];
+area["ISO3166-1"="ES"][admin_level=2]->.a;
+way["railway"~"^(rail|narrow_gauge)$"][!"service"]["usage"!~"^(industrial|military|tourism|test)$"](area.a);
+out tags geom;
+```
+
+Una primera versión que exigía la etiqueta `usage` dejaba fuera Cataluña y la vía estrecha del norte. Comprobación del 1 de noviembre de 2026: el 100 % de 145 trenes de larga distancia y el 98,8 % de 257 de Cercanías quedaban a menos de 1,5 km de una vía dibujada. Las 3 excepciones son del Trambahía de Cádiz, que OpenStreetMap clasifica como tranvía.
+
 ## Problemas reales encontrados
 
 Estos comportamientos no aparecen en la documentación de Renfe. Cada uno condiciona el diseño.
@@ -82,4 +97,5 @@ Por tanto, "todos los vehículos ferroviarios de España" **no es alcanzable hoy
 ## Condiciones de uso
 
 - **Renfe:** la [licencia](https://data.renfe.com/legal) permite el uso comercial. Hay que citar "Origen de los datos: Renfe Operadora" con la fecha de actualización cuando exista, no alterar el sentido de los datos y no sugerir respaldo de Renfe. Reutilizar es responsabilidad de quien reutiliza.
+- **OpenStreetMap:** datos bajo ODbL, con atribución en Ajustes y en los informes.
 - **OpenFreeMap:** sin clave ni registro, con atribución. Las [descargas offline](https://openfreemap.org/quick_start/) se limitan a 3.000 teselas o 50 MB por descarga, 4 peticiones paralelas y `User-Agent` propio.

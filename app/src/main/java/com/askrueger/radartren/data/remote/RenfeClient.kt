@@ -3,11 +3,14 @@ package com.askrueger.radartren.data.remote
 import com.askrueger.radartren.domain.Feed
 import com.askrueger.radartren.domain.FeedHealth
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
+
+private const val RETRY_DELAY_MILLIS = 1_500L
 
 data class FeedResult(val feed: Feed, val message: FeedMessage?, val health: FeedHealth)
 
@@ -20,13 +23,24 @@ class RenfeClient(private val http: OkHttpClient) {
 
     private val cache = ConcurrentHashMap<Feed, Cached>()
 
+    /** Retries once, because a single lost request would otherwise strip delays from the whole map. */
     suspend fun fetch(feed: Feed): FeedResult = withContext(Dispatchers.IO) {
+        attempt(feed) ?: run {
+            delay(RETRY_DELAY_MILLIS)
+            attempt(feed)
+        } ?: cache[feed].let { cached ->
+            // The last good data stays usable, and the health tells everyone that it is old.
+            FeedResult(feed, cached?.message, FeedHealth.unreachable(feed, cached?.lastModified))
+        }
+    }
+
+    private fun attempt(feed: Feed): FeedResult? {
         val cached = cache[feed]
         val request = Request.Builder()
             .url("$BASE_URL/${feed.path}")
             .apply { cached?.etag?.let { header("If-None-Match", it) } }
             .build()
-        try {
+        return try {
             http.newCall(request).execute().use { response ->
                 val serverNow = response.headers.getDate("Date")?.time?.div(1000)
                     ?: (System.currentTimeMillis() / 1000)
@@ -41,19 +55,16 @@ class RenfeClient(private val http: OkHttpClient) {
                         FeedResult(feed, message, FeedHealth.evaluate(feed, lastModified, serverNow))
                     }
 
-                    else -> unreachable(feed, cached)
+                    else -> null
                 }
             }
         } catch (_: IOException) {
-            unreachable(feed, cached)
+            null
         } catch (_: IllegalArgumentException) {
             // Raised by the decoder on a truncated or malformed payload.
-            unreachable(feed, cached)
+            null
         }
     }
-
-    private fun unreachable(feed: Feed, cached: Cached?) =
-        FeedResult(feed, null, FeedHealth.unreachable(feed, cached?.lastModified))
 
     companion object {
         private const val BASE_URL = "https://gtfsrt.renfe.com"

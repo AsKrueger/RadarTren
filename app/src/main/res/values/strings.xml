@@ -42,13 +42,23 @@
     <string name="service_long_distance">High speed and long distance</string>
     <string name="filter_all">All</string>
 
+    <string name="family_other">Others</string>
+    <string name="map_status_loading">Connecting to Renfe</string>
+    <string name="map_status_live">Live, Renfe data from %1$s</string>
+    <string name="map_status_stale">Data may be out of date</string>
+    <string name="map_status_no_position">%1$d without position</string>
+    <string name="map_zoom_in">Zoom in</string>
+    <string name="map_zoom_out">Zoom out</string>
+    <string name="map_recenter">Show all of Spain</string>
+    <string name="stat_on_map">on the map</string>
+    <string name="stat_delayed">5 min or more late</string>
+    <string name="stat_average">average delay</string>
+    <string name="feedback_no_app">No email app available. Install one to send feedback.</string>
     <string name="map_search">Line, train or destination</string>
-    <string name="map_trains_count">%1$d trains</string>
     <string name="legend_on_time">On time</string>
     <string name="legend_minor">5–14 min</string>
     <string name="legend_moderate">15–29 min</string>
     <string name="legend_severe">30 min or more</string>
-    <string name="legend_unknown">No delay data</string>
 
     <string name="train_delay">Delay</string>
     <string name="train_delay_unknown">Not available</string>

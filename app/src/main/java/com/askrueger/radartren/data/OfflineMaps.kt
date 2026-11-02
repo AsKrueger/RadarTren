@@ -11,7 +11,10 @@ import org.maplibre.android.offline.OfflineRegionError
 import org.maplibre.android.offline.OfflineRegionStatus
 import org.maplibre.android.offline.OfflineTilePyramidRegionDefinition
 
-const val MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty"
+private const val LIGHT_STYLE = "https://tiles.openfreemap.org/styles/liberty"
+private const val DARK_STYLE = "https://tiles.openfreemap.org/styles/dark"
+
+fun mapStyleUrl(dark: Boolean): String = if (dark) DARK_STYLE else LIGHT_STYLE
 
 sealed interface OfflineMapState {
     data object Idle : OfflineMapState
@@ -30,14 +33,23 @@ class OfflineMaps(private val context: Context) {
     private val _state = MutableStateFlow<OfflineMapState>(OfflineMapState.Idle)
     val state: StateFlow<OfflineMapState> = _state
 
+    /** Saves both styles so that the theme can change offline. They share tiles, so the size barely grows. */
     suspend fun enable() {
-        if (regions().isNotEmpty()) {
-            _state.value = OfflineMapState.Ready
-            return
-        }
+        val saved = regions().map { String(it.metadata) }
+        val missing = listOf(LIGHT_STYLE, DARK_STYLE).filter { it !in saved }
         _state.value = OfflineMapState.Downloading(0)
+        missing.forEachIndexed { index, style ->
+            if (!download(style) { percent -> (index * 100 + percent) / missing.size }) {
+                _state.value = OfflineMapState.Failed
+                return
+            }
+        }
+        _state.value = OfflineMapState.Ready
+    }
+
+    private suspend fun download(style: String, overall: (Int) -> Int): Boolean {
         val definition = OfflineTilePyramidRegionDefinition(
-            MAP_STYLE_URL,
+            style,
             LatLngBounds.from(44.0, 4.6, 27.4, -18.5),
             MIN_ZOOM,
             MAX_ZOOM,
@@ -46,7 +58,7 @@ class OfflineMaps(private val context: Context) {
         val created = CompletableDeferred<OfflineRegion>()
         manager.createOfflineRegion(
             definition,
-            ByteArray(0),
+            style.toByteArray(),
             object : OfflineManager.CreateOfflineRegionCallback {
                 override fun onCreate(offlineRegion: OfflineRegion) { created.complete(offlineRegion) }
                 override fun onError(error: String) { created.completeExceptionally(IllegalStateException(error)) }
@@ -55,30 +67,29 @@ class OfflineMaps(private val context: Context) {
         val region = try {
             created.await()
         } catch (_: IllegalStateException) {
-            _state.value = OfflineMapState.Failed
-            return
+            return false
         }
+        val finished = CompletableDeferred<Boolean>()
         region.setObserver(object : OfflineRegion.OfflineRegionObserver {
             override fun onStatusChanged(status: OfflineRegionStatus) {
                 val required = status.requiredResourceCount.coerceAtLeast(1)
                 if (status.isComplete) {
                     region.setDownloadState(OfflineRegion.STATE_INACTIVE)
-                    _state.value = OfflineMapState.Ready
+                    finished.complete(true)
                 } else {
-                    _state.value = OfflineMapState.Downloading((status.completedResourceCount * 100 / required).toInt())
+                    _state.value = OfflineMapState.Downloading(overall((status.completedResourceCount * 100 / required).toInt()))
                 }
             }
 
-            override fun onError(error: OfflineRegionError) {
-                // Transient network errors are retried by the engine; only report and carry on.
-                if (_state.value !is OfflineMapState.Downloading) _state.value = OfflineMapState.Failed
-            }
+            // Transient network errors are retried by the engine.
+            override fun onError(error: OfflineRegionError) = Unit
 
             override fun mapboxTileCountLimitExceeded(limit: Long) {
-                _state.value = OfflineMapState.Failed
+                finished.complete(false)
             }
         })
         region.setDownloadState(OfflineRegion.STATE_ACTIVE)
+        return finished.await()
     }
 
     suspend fun disable() {

@@ -66,9 +66,9 @@ fun AppRoot(viewModel: AppViewModel, settings: Settings, onDisclaimerAccepted: (
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            dataWarning(live)?.let { DataWarning(stringResource(it)) }
+            dataWarning(live, tab)?.let { DataWarning(stringResource(it)) }
             when (tab) {
-                Tab.MAP -> MapScreen(live, Modifier.weight(1f))
+                Tab.MAP -> MapScreen(live, viewModel.catalog.allStations, Modifier.weight(1f))
                 Tab.INCIDENTS -> IncidentsScreen(incidents, Modifier.weight(1f))
                 Tab.REPORTS -> ReportsScreen(reports, { viewModel.reportUri(context, it) }, Modifier.weight(1f))
                 Tab.SETTINGS -> SettingsScreen(viewModel, settings, live, Modifier.weight(1f))
@@ -91,13 +91,16 @@ fun AppRoot(viewModel: AppViewModel, settings: Settings, onDisclaimerAccepted: (
     }
 }
 
-/** Position and delay problems outrank the alerts one: they affect what the map itself shows. */
-private fun dataWarning(live: LiveData?): Int? {
+/**
+ * Position and delay problems outrank the alerts one and show everywhere, since they affect what
+ * the map itself shows. Frozen notices only matter where notices are listed.
+ */
+private fun dataWarning(live: LiveData?, tab: Tab): Int? {
     val snapshot = live?.snapshot ?: return null
     return when {
         snapshot.health.any { it.state == FeedState.UNREACHABLE && it.feed != Feed.ALERTS } -> R.string.warning_offline
         !snapshot.liveDataComplete -> R.string.warning_stale
-        !snapshot.officialAlertsLive -> R.string.warning_alerts_frozen
+        tab == Tab.INCIDENTS && !snapshot.officialAlertsLive -> R.string.warning_alerts_frozen
         else -> null
     }
 }

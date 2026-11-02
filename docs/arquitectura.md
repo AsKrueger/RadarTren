@@ -51,9 +51,13 @@ Un servidor con recogida continua y notificaciones push resolvería ambas cosas,
 
 **Cada fuente solo cierra lo que pudo ver.** Una descarga fallida no significa que la incidencia terminó, así que no resuelve nada (`IncidentRepository.record`).
 
-**MapLibre con OpenFreeMap.** Es abierto, gratuito y sin clave. Se usa el estilo `liberty` en ambos temas para que el mapa guardado sirva siempre.
+**MapLibre con OpenFreeMap.** Es abierto, gratuito y sin clave. El estilo sigue al tema: `dark` en oscuro y `liberty` en claro. Encima se dibujan, por este orden, la red ferroviaria, las estaciones (desde zoom 7), los trenes y sus etiquetas.
 
-**Mapa offline hasta zoom 8.** Zoom 9 serían 1.404 teselas pero midió 58 MB, por encima del límite de 50 MB de OpenFreeMap. Zoom 8 son 384 teselas y 31 MB. Ampliarlo requiere pedirles permiso o alojar las teselas.
+**Avisos en su sitio.** El feed de avisos congelado solo se señala en Incidencias. Si fallan posiciones o retrasos, el banner sale en todas las pestañas porque afecta al mapa.
+
+**Fallos de red.** Cada descarga se reintenta una vez. Si vuelve a fallar se conserva el último dato bueno, marcado como no disponible, para que un fallo puntual no deje el mapa sin retrasos.
+
+**Mapa offline hasta zoom 8.** Zoom 9 serían 1.404 teselas pero midió 58 MB, por encima del límite de 50 MB de OpenFreeMap. Zoom 8 son 384 teselas y unos 30 MB, con los dos estilos, que comparten teselas. Ampliarlo requiere pedirles permiso o alojar las teselas.
 
 **Paleta fija.** Sin color dinámico, para que la urgencia se vea igual en todos los móviles.
 

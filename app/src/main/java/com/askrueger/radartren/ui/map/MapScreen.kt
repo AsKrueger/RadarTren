@@ -3,6 +3,7 @@ package com.askrueger.radartren.ui.map
 import android.graphics.PointF
 import android.os.Bundle
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,18 +12,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -32,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -40,105 +47,151 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.askrueger.radartren.R
 import com.askrueger.radartren.data.LiveData
-import com.askrueger.radartren.data.MAP_STYLE_URL
+import com.askrueger.radartren.data.mapStyleUrl
 import com.askrueger.radartren.domain.DelayLevel
-import com.askrueger.radartren.domain.Service
+import com.askrueger.radartren.domain.Feed
+import com.askrueger.radartren.domain.NetworkStats
+import com.askrueger.radartren.domain.ProductFamily
+import com.askrueger.radartren.domain.Station
 import com.askrueger.radartren.domain.Train
 import com.askrueger.radartren.domain.TrainStatus
 import com.askrueger.radartren.ui.common.delayColorHex
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.Point
+import java.net.URI
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-private const val SOURCE = "trains"
+private const val TRAINS = "trains"
+private const val NETWORK = "network"
+private const val STATIONS = "stations"
 private const val DOTS = "train-dots"
 private const val LABELS = "train-labels"
-private const val LABEL_MIN_ZOOM = 9f
+private const val LABEL_MIN_ZOOM = 8.5f
+private const val STATION_MIN_ZOOM = 7f
+private val SPAIN = LatLng(40.0, -3.7)
+private const val SPAIN_ZOOM = 4.8
 
-private enum class ServiceFilter { ALL, COMMUTER, LONG_DISTANCE }
+/** Colors drawn by the map engine, which sit outside the Compose theme. */
+private class MapColors(dark: Boolean) {
+    val highSpeed = if (dark) "#6C93C4" else "#0F4C81"
+    val conventional = if (dark) "#47586E" else "#8FA0B3"
+    val halo = if (dark) "#0E1621" else "#FFFFFF"
+    val text = if (dark) "#E8EDF3" else "#18202C"
+    val station = if (dark) "#C4D0DE" else "#3A4656"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(live: LiveData?, modifier: Modifier = Modifier) {
-    var filter by rememberSaveable { mutableStateOf(ServiceFilter.ALL) }
+fun MapScreen(live: LiveData?, stations: List<Station>, modifier: Modifier = Modifier) {
+    var family by rememberSaveable { mutableStateOf<ProductFamily?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
+    var searching by rememberSaveable { mutableStateOf(false) }
     var selectedId by remember { mutableStateOf<String?>(null) }
+    var map by remember { mutableStateOf<MapLibreMap?>(null) }
+    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-    val trains = remember(live, filter, query) {
+    val all = live?.snapshot?.trains.orEmpty()
+    val counts = remember(all) { all.groupingBy { it.family }.eachCount() }
+    val trains = remember(all, family, query) {
         val needle = query.trim().lowercase()
-        live?.snapshot?.trains.orEmpty().filter { train ->
-            val inService = when (filter) {
-                ServiceFilter.ALL -> true
-                ServiceFilter.COMMUTER -> train.service == Service.COMMUTER
-                ServiceFilter.LONG_DISTANCE -> train.service == Service.LONG_DISTANCE
-            }
-            inService && (needle.isEmpty() || listOfNotNull(train.label, train.number, train.destination, train.core?.displayName)
-                .any { needle in it.lowercase() })
+        all.filter { train ->
+            (family == null || train.family == family) &&
+                (needle.isEmpty() || listOfNotNull(train.label, train.number, train.destination, train.core?.displayName)
+                    .any { needle in it.lowercase() })
         }
     }
-    val selected = live?.snapshot?.trains?.firstOrNull { it.id == selectedId }
+    val selected = all.firstOrNull { it.id == selectedId }
 
     Box(modifier.fillMaxSize()) {
-        TrainMap(trains, onTrainClick = { selectedId = it }, modifier = Modifier.fillMaxSize())
-        Column(Modifier.fillMaxWidth().padding(12.dp)) {
-            Surface(shape = RoundedCornerShape(16.dp), shadowElevation = 3.dp) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(stringResource(R.string.map_search)) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
-                )
-            }
-            Row(
-                Modifier.horizontalScroll(rememberScrollState()).padding(top = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                ServiceFilter.entries.forEach { option ->
-                    FilterChip(
-                        selected = filter == option,
-                        onClick = { filter = option },
-                        label = {
-                            Text(
-                                stringResource(
-                                    when (option) {
-                                        ServiceFilter.ALL -> R.string.filter_all
-                                        ServiceFilter.COMMUTER -> R.string.service_commuter
-                                        ServiceFilter.LONG_DISTANCE -> R.string.service_long_distance
-                                    },
-                                ),
+        key(dark) {
+            TrainMap(
+                trains = trains,
+                stations = stations,
+                dark = dark,
+                onReady = { map = it },
+                onTrainClick = { selectedId = it },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        Column(Modifier.fillMaxWidth().padding(10.dp)) {
+            Panel {
+                Column(Modifier.padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            stringResource(R.string.app_name),
+                            Modifier.weight(1f),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        IconButton(onClick = {
+                            searching = !searching
+                            if (!searching) query = ""
+                        }) {
+                            Icon(
+                                if (searching) Icons.Default.Close else Icons.Default.Search,
+                                stringResource(R.string.map_search),
                             )
-                        },
-                    )
+                        }
+                    }
+                    Status(live)
+                    if (searching) {
+                        OutlinedTextField(
+                            value = query,
+                            onValueChange = { query = it },
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, end = 10.dp),
+                            placeholder = { Text(stringResource(R.string.map_search)) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(14.dp),
+                        )
+                    }
                 }
+            }
+            FamilyChips(counts, all.size, family) { family = it }
+        }
+        Column(
+            Modifier.align(Alignment.CenterEnd).padding(end = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            MapButton(Icons.Default.Add, R.string.map_zoom_in) { map?.animateCamera(CameraUpdateFactory.zoomIn()) }
+            MapButton(Icons.Default.Remove, R.string.map_zoom_out) { map?.animateCamera(CameraUpdateFactory.zoomOut()) }
+            MapButton(Icons.Default.MyLocation, R.string.map_recenter) {
+                map?.animateCamera(CameraUpdateFactory.newLatLngZoom(SPAIN, SPAIN_ZOOM))
             }
         }
         // Lifted so that it never covers the map attribution, which the licences require to be visible.
-        Legend(trains.size, Modifier.align(Alignment.BottomStart).padding(start = 12.dp, bottom = 40.dp))
+        Summary(
+            NetworkStats.of(trains),
+            Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = 10.dp, end = 10.dp, bottom = 34.dp),
+        )
     }
 
     if (selected != null) {
@@ -147,50 +200,169 @@ fun MapScreen(live: LiveData?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TrainMap(trains: List<Train>, onTrainClick: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun Panel(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Surface(
+        modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.93f),
+        shadowElevation = 3.dp,
+        content = content,
+    )
+}
+
+@Composable
+private fun Status(live: LiveData?) {
+    val snapshot = live?.snapshot
+    val isLive = snapshot?.liveDataComplete == true
+    val updatedAt = snapshot?.healthOf(Feed.COMMUTER_POSITIONS)?.updatedAt
+    val parts = buildList {
+        when {
+            snapshot == null -> add(stringResource(R.string.map_status_loading))
+            isLive && updatedAt != null -> {
+                val time = Instant.ofEpochSecond(updatedAt).atZone(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("HH:mm"))
+                add(stringResource(R.string.map_status_live, time))
+            }
+            else -> add(stringResource(R.string.map_status_stale))
+        }
+        if (isLive && snapshot.withoutPosition > 0) {
+            add(stringResource(R.string.map_status_no_position, snapshot.withoutPosition))
+        }
+    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(8.dp).background(
+                when {
+                    snapshot == null -> Color(0xFF7A8797)
+                    isLive -> Color(0xFF2E9E5B)
+                    else -> Color(0xFFE0A800)
+                },
+                CircleShape,
+            ),
+        )
+        Spacer(Modifier.size(7.dp))
+        Text(
+            parts.joinToString(" · "),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun FamilyChips(
+    counts: Map<ProductFamily, Int>,
+    total: Int,
+    selected: ProductFamily?,
+    onSelect: (ProductFamily?) -> Unit,
+) {
+    Row(
+        Modifier.horizontalScroll(rememberScrollState()).padding(top = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Chip("${stringResource(R.string.filter_all)} $total", selected == null) { onSelect(null) }
+        ProductFamily.entries.filter { (counts[it] ?: 0) > 0 }.forEach { option ->
+            val name = option.displayName ?: stringResource(
+                if (option == ProductFamily.COMMUTER) R.string.service_commuter else R.string.family_other,
+            )
+            Chip("$name ${counts[option]}", selected == option) { onSelect(option) }
+        }
+    }
+}
+
+@Composable
+private fun Chip(text: String, selected: Boolean, onClick: () -> Unit) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(text) },
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.93f),
+            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+    )
+}
+
+@Composable
+private fun MapButton(icon: ImageVector, description: Int, onClick: () -> Unit) {
+    Panel {
+        IconButton(onClick = onClick) { Icon(icon, stringResource(description)) }
+    }
+}
+
+@Composable
+private fun Summary(stats: NetworkStats, modifier: Modifier = Modifier) {
+    Panel(modifier) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Figure("${stats.onMap}", stringResource(R.string.stat_on_map))
+                Figure("${stats.delayed}", stringResource(R.string.stat_delayed), Color(android.graphics.Color.parseColor(delayColorHex(DelayLevel.MODERATE))))
+                Figure("${stats.averageDelayMinutes} min", stringResource(R.string.stat_average))
+            }
+            Spacer(Modifier.height(6.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                LegendItem(DelayLevel.ON_TIME, R.string.legend_on_time)
+                LegendItem(DelayLevel.MINOR, R.string.legend_minor)
+                LegendItem(DelayLevel.MODERATE, R.string.legend_moderate)
+                LegendItem(DelayLevel.SEVERE, R.string.legend_severe)
+            }
+        }
+    }
+}
+
+@Composable
+private fun Figure(value: String, name: String, color: Color = MaterialTheme.colorScheme.onSurface) {
+    Column {
+        Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = color)
+        Text(name, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun LegendItem(level: DelayLevel, label: Int) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(8.dp).background(Color(android.graphics.Color.parseColor(delayColorHex(level))), CircleShape))
+        Spacer(Modifier.size(4.dp))
+        Text(stringResource(label), style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+private fun TrainMap(
+    trains: List<Train>,
+    stations: List<Station>,
+    dark: Boolean,
+    onReady: (MapLibreMap) -> Unit,
+    onTrainClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val onClick by rememberUpdatedState(onTrainClick)
-    var loaded by remember { mutableStateOf<Pair<MapLibreMap, Style>?>(null) }
+    val ready by rememberUpdatedState(onReady)
+    var loaded by remember { mutableStateOf<Style?>(null) }
 
     val mapView = remember {
         MapLibre.getInstance(context)
         MapView(context).apply {
             onCreate(Bundle())
             getMapAsync { map ->
-                map.cameraPosition = CameraPosition.Builder().target(LatLng(40.0, -3.7)).zoom(4.8).build()
+                map.cameraPosition = CameraPosition.Builder().target(SPAIN).zoom(SPAIN_ZOOM).build()
+                map.uiSettings.isLogoEnabled = false
+                map.uiSettings.isRotateGesturesEnabled = false
+                map.uiSettings.isTiltGesturesEnabled = false
                 map.addOnMapClickListener { point ->
                     val screen: PointF = map.projection.toScreenLocation(point)
                     val hit = map.queryRenderedFeatures(screen, DOTS).firstOrNull()
                     hit?.getStringProperty("id")?.let { onClick(it) }
                     hit != null
                 }
-                map.setStyle(Style.Builder().fromUri(MAP_STYLE_URL)) { style ->
-                    style.addSource(GeoJsonSource(SOURCE))
-                    style.addLayer(
-                        CircleLayer(DOTS, SOURCE).withProperties(
-                            PropertyFactory.circleColor(Expression.get("color")),
-                            PropertyFactory.circleRadius(
-                                Expression.interpolate(
-                                    Expression.linear(), Expression.zoom(),
-                                    Expression.stop(4, 3f), Expression.stop(8, 5f), Expression.stop(13, 9f),
-                                ),
-                            ),
-                            PropertyFactory.circleStrokeWidth(1.2f),
-                            PropertyFactory.circleStrokeColor(Color.White.toArgb()),
-                        ),
-                    )
-                    style.addLayer(
-                        SymbolLayer(LABELS, SOURCE).withProperties(
-                            PropertyFactory.textField(Expression.get("label")),
-                            PropertyFactory.textSize(11f),
-                            PropertyFactory.textOffset(arrayOf(0f, 1.3f)),
-                            PropertyFactory.textHaloColor(Color.White.toArgb()),
-                            PropertyFactory.textHaloWidth(1.4f),
-                            PropertyFactory.textFont(arrayOf("Noto Sans Regular")),
-                        ).apply { minZoom = LABEL_MIN_ZOOM },
-                    )
-                    loaded = map to style
+                map.setStyle(Style.Builder().fromUri(mapStyleUrl(dark))) { style ->
+                    addRailLayers(style, stations, MapColors(dark))
+                    loaded = style
+                    ready(map)
                 }
             }
         }
@@ -207,6 +379,9 @@ private fun TrainMap(trains: List<Train>, onTrainClick: (String) -> Unit, modifi
             }
         }
         lifecycle.addObserver(observer)
+        // A new map can arrive when the app is already started, as when the theme changes.
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapView.onStart()
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapView.onResume()
         onDispose {
             lifecycle.removeObserver(observer)
             mapView.onDestroy()
@@ -214,7 +389,7 @@ private fun TrainMap(trains: List<Train>, onTrainClick: (String) -> Unit, modifi
     }
 
     LaunchedEffect(loaded, trains) {
-        val source = loaded?.second?.getSourceAs<GeoJsonSource>(SOURCE) ?: return@LaunchedEffect
+        val source = loaded?.getSourceAs<GeoJsonSource>(TRAINS) ?: return@LaunchedEffect
         source.setGeoJson(
             FeatureCollection.fromFeatures(
                 trains.map { train ->
@@ -231,29 +406,64 @@ private fun TrainMap(trains: List<Train>, onTrainClick: (String) -> Unit, modifi
     AndroidView(factory = { mapView }, modifier = modifier)
 }
 
-@Composable
-private fun Legend(count: Int, modifier: Modifier = Modifier) {
-    Surface(modifier, shape = RoundedCornerShape(12.dp), tonalElevation = 3.dp, shadowElevation = 2.dp) {
-        Column(Modifier.padding(horizontal = 10.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Text(stringResource(R.string.map_trains_count, count), fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
-            LegendRow(DelayLevel.ON_TIME, R.string.legend_on_time)
-            LegendRow(DelayLevel.MINOR, R.string.legend_minor)
-            LegendRow(DelayLevel.MODERATE, R.string.legend_moderate)
-            LegendRow(DelayLevel.SEVERE, R.string.legend_severe)
-            LegendRow(DelayLevel.UNKNOWN, R.string.legend_unknown)
-        }
-    }
-}
+/** The drawing order, bottom to top: rail network, stations, trains, labels. */
+private fun addRailLayers(style: Style, stations: List<Station>, colors: MapColors) {
+    style.addSource(GeoJsonSource(NETWORK, URI("asset://catalog/network.geojson")))
+    style.addSource(
+        GeoJsonSource(
+            STATIONS,
+            FeatureCollection.fromFeatures(
+                stations.map { Feature.fromGeometry(Point.fromLngLat(it.longitude, it.latitude)) },
+            ),
+        ),
+    )
+    style.addSource(GeoJsonSource(TRAINS))
 
-@Composable
-private fun LegendRow(level: DelayLevel, label: Int) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            Modifier.size(9.dp).background(Color(android.graphics.Color.parseColor(delayColorHex(level))), CircleShape),
-        )
-        Spacer(Modifier.size(6.dp))
-        Text(stringResource(label), style = MaterialTheme.typography.labelSmall)
-    }
+    fun railLayer(id: String, highSpeed: Int, color: String, thin: Float, wide: Float) =
+        LineLayer(id, NETWORK).withProperties(
+            PropertyFactory.lineColor(color),
+            PropertyFactory.lineWidth(
+                Expression.interpolate(
+                    Expression.linear(), Expression.zoom(),
+                    Expression.stop(4, thin), Expression.stop(12, wide),
+                ),
+            ),
+        ).withFilter(Expression.eq(Expression.get("hs"), Expression.literal(highSpeed)))
+
+    style.addLayer(railLayer("rail-conventional", 0, colors.conventional, 0.7f, 2f))
+    style.addLayer(railLayer("rail-high-speed", 1, colors.highSpeed, 1.3f, 3f))
+    style.addLayer(
+        CircleLayer("station-dots", STATIONS).withProperties(
+            PropertyFactory.circleColor(colors.station),
+            PropertyFactory.circleRadius(2.2f),
+            PropertyFactory.circleStrokeColor(colors.halo),
+            PropertyFactory.circleStrokeWidth(0.8f),
+        ).apply { minZoom = STATION_MIN_ZOOM },
+    )
+    style.addLayer(
+        CircleLayer(DOTS, TRAINS).withProperties(
+            PropertyFactory.circleColor(Expression.get("color")),
+            PropertyFactory.circleRadius(
+                Expression.interpolate(
+                    Expression.linear(), Expression.zoom(),
+                    Expression.stop(4, 3.5f), Expression.stop(8, 6f), Expression.stop(13, 10f),
+                ),
+            ),
+            PropertyFactory.circleStrokeWidth(1.2f),
+            PropertyFactory.circleStrokeColor(colors.halo),
+        ),
+    )
+    style.addLayer(
+        SymbolLayer(LABELS, TRAINS).withProperties(
+            PropertyFactory.textField(Expression.get("label")),
+            PropertyFactory.textSize(11f),
+            PropertyFactory.textOffset(arrayOf(0f, 1.4f)),
+            PropertyFactory.textColor(colors.text),
+            PropertyFactory.textHaloColor(colors.halo),
+            PropertyFactory.textHaloWidth(1.4f),
+            PropertyFactory.textFont(arrayOf("Noto Sans Regular")),
+        ).apply { minZoom = LABEL_MIN_ZOOM },
+    )
 }
 
 @Composable
@@ -303,7 +513,7 @@ private fun Detail(name: String, value: String) {
     }
 }
 
-/** Shown over every tab when the picture is incomplete, so nobody mistakes old data for live data. */
+/** Shown when the picture is incomplete, so nobody mistakes old data for live data. */
 @Composable
 fun DataWarning(text: String, modifier: Modifier = Modifier) {
     Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.errorContainer) {

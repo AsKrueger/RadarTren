@@ -1,5 +1,7 @@
 package com.askrueger.radartren.domain
 
+import kotlin.math.roundToInt
+
 /** Urgency of an incident, lowest first so that ordinal comparisons read naturally. */
 enum class Severity {
     INFO, LOW, MEDIUM, HIGH, CRITICAL;
@@ -39,6 +41,53 @@ data class Train(
     val destination: String?,
 ) {
     val delayLevel: DelayLevel get() = DelayLevel.of(delayMinutes)
+    val family: ProductFamily
+        get() = if (service == Service.COMMUTER) ProductFamily.COMMUTER else ProductFamily.ofProduct(label)
+}
+
+/** How the map groups trains. Null [displayName]s are translated by the interface. */
+enum class ProductFamily(val displayName: String?) {
+    COMMUTER(null),
+    AVE("AVE"),
+    AVLO("Avlo"),
+    AVANT("Avant"),
+    ALVIA("Alvia"),
+    EUROMED("Euromed"),
+    INTERCITY("Intercity"),
+    MEDIA_DISTANCIA("MD"),
+    REGIONAL("Regional"),
+    PROXIMIDAD("Proximidad"),
+    OTHER(null);
+
+    companion object {
+        /** Names as Renfe spells them in its GTFS, "PROXIMDAD" included. */
+        fun ofProduct(product: String?): ProductFamily = when (product?.uppercase()) {
+            "AVE", "AVE INT" -> AVE
+            "AVLO" -> AVLO
+            "AVANT", "AVANT EXP" -> AVANT
+            "ALVIA" -> ALVIA
+            "EUROMED" -> EUROMED
+            "INTERCITY" -> INTERCITY
+            "MD" -> MEDIA_DISTANCIA
+            "REGIONAL", "REG.EXP." -> REGIONAL
+            "PROXIMDAD" -> PROXIMIDAD
+            else -> OTHER
+        }
+    }
+}
+
+/** The figures under the map, for whatever trains are on it. */
+data class NetworkStats(val onMap: Int, val delayed: Int, val averageDelayMinutes: Int) {
+    companion object {
+        fun of(trains: List<Train>): NetworkStats {
+            val delays = trains.mapNotNull { it.delayMinutes }
+            return NetworkStats(
+                onMap = trains.size,
+                delayed = delays.count { it >= 5 },
+                averageDelayMinutes = if (delays.isEmpty()) 0 else delays.map { it.coerceAtLeast(0) }.average().roundToInt(),
+            )
+        }
+    }
 }
 
 /** A Cercanías/Rodalies network. The code is the two-digit prefix of Renfe route and trip ids. */

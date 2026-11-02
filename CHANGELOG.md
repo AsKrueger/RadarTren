@@ -1,5 +1,15 @@
 # Registro de cambios
 
+## Sin publicar
+
+- Rediseño del mapa: tema oscuro, red ferroviaria real de OpenStreetMap, alta velocidad destacada y estaciones.
+- Chips por producto con contador, cifras en vivo, línea de estado con trenes sin posición y controles de zoom.
+- El mapa guardado incluye los estilos claro y oscuro.
+- Paleta azul propia en toda la app.
+- Corregido: un fallo puntual de red dejaba el mapa sin retrasos.
+- Corregido: Enviar comentarios podía cerrar la app sin app de correo (#2).
+- El aviso de feed oficial congelado solo aparece en Incidencias.
+
 ## 0.1.0 - MVP (sin publicar)
 
 - Mapa en vivo con los trenes de Cercanías, Rodalies, alta velocidad, larga y media distancia.

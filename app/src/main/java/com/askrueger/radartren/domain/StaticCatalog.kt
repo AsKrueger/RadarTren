@@ -12,6 +12,8 @@ class StaticCatalog(
     private val lines: Map<String, Line>,
     private val trains: Map<String, LongDistanceTrain>,
 ) {
+    val allStations: List<Station> get() = stations.values.toList()
+
     fun station(id: String): Station? = stations[id.trim()]
     fun line(routeId: String): Line? = lines[routeId.trim()]
     fun train(number: String): LongDistanceTrain? = trains[number]

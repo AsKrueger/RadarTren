@@ -18,6 +18,8 @@ data class NetworkSnapshot(
     val trains: List<Train>,
     val cancelled: List<CancelledTrip>,
     val health: List<FeedHealth>,
+    /** Trains running according to the delay feeds, but missing from the position feeds. */
+    val withoutPosition: Int = 0,
 ) {
     fun healthOf(feed: Feed): FeedHealth? = health.firstOrNull { it.feed == feed }
 
@@ -59,7 +61,14 @@ class SnapshotAssembler(private val catalog: StaticCatalog) {
             trains = commuter + longDistance,
             cancelled = cancelled(commuterUpdates, Service.COMMUTER) + cancelled(longDistanceUpdates, Service.LONG_DISTANCE),
             health = health,
+            withoutPosition = withoutPosition(commuterDelays.keys, commuter) +
+                withoutPosition(longDistanceByNumber.keys, longDistance),
         )
+    }
+
+    private fun withoutPosition(running: Set<String>, trains: List<Train>): Int {
+        val located = trains.flatMap { listOf(it.id, it.number) }.toSet()
+        return running.count { it !in located }
     }
 
     private fun commuterTrain(vehicle: VehiclePosition, delay: Int?): Train? {

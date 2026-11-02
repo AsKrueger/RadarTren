@@ -42,7 +42,6 @@ Opciones: Cloudflare Workers con cron y D1, o Firebase Cloud Functions con FCM. 
 
 - [ ] Detección por corredor en larga distancia, no como una sola red.
 - [ ] Detectar trenes parados entre estaciones durante mucho tiempo, con cuidado por los falsos positivos. Requiere servidor.
-- [ ] Dibujar las líneas ferroviarias con los `shapes.txt` del GTFS.
 - [ ] Añadir clasificación en catalán y euskera.
 - [ ] Investigar tiempo real de FGC, Euskotren, Metro, Iryo y Ouigo.
 - [ ] Actualización remota del catálogo, sin publicar versión.

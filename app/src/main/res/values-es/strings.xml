@@ -41,13 +41,23 @@
     <string name="service_long_distance">Alta velocidad y larga distancia</string>
     <string name="filter_all">Todos</string>
 
+    <string name="family_other">Otros</string>
+    <string name="map_status_loading">Conectando con Renfe</string>
+    <string name="map_status_live">En vivo, datos de Renfe de las %1$s</string>
+    <string name="map_status_stale">Los datos pueden estar desactualizados</string>
+    <string name="map_status_no_position">%1$d sin posición</string>
+    <string name="map_zoom_in">Acercar</string>
+    <string name="map_zoom_out">Alejar</string>
+    <string name="map_recenter">Ver toda España</string>
+    <string name="stat_on_map">en el mapa</string>
+    <string name="stat_delayed">con 5 min o más</string>
+    <string name="stat_average">retraso medio</string>
+    <string name="feedback_no_app">No hay ninguna app de correo. Instala una para enviar comentarios.</string>
     <string name="map_search">Línea, tren o destino</string>
-    <string name="map_trains_count">%1$d trenes</string>
     <string name="legend_on_time">Puntual</string>
     <string name="legend_minor">5–14 min</string>
     <string name="legend_moderate">15–29 min</string>
     <string name="legend_severe">30 min o más</string>
-    <string name="legend_unknown">Sin dato de retraso</string>
 
     <string name="train_delay">Retraso</string>
     <string name="train_delay_unknown">No disponible</string>
